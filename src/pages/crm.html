@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Splitfilling - CRM Profissional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .main-content { height: calc(100vh - 80px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans overflow-hidden">
+    
+    <div class="flex h-screen w-screen">
+        <div id="sidebar-container"></div>
+
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <div id="header-container"></div>
+
+            <main class="main-content overflow-y-auto p-10 bg-black/30 no-scrollbar text-white">
+                
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-500 italic">CRM / CLIENTES</h3>
+                        <p class="text-sm text-gray-500">Gestão de parceiros e segmentação da Splitfilling.</p>
+                    </div>
+                    <button onclick="abrirModal()" class="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-green-900/20">
+                        + Novo Cliente
+                    </button>
+                </div>
+
+                <!-- FILTROS -->
+                <div class="flex gap-4 mb-8">
+                    <button onclick="fetchClientes()" class="px-6 py-2 bg-gray-800 rounded-full text-xs font-bold uppercase hover:bg-gray-700 transition">Todos</button>
+                    <button onclick="filtrar('Distribuidor')" class="px-6 py-2 bg-blue-900/30 border border-blue-500/50 text-blue-400 rounded-full text-xs font-bold uppercase hover:bg-blue-900/50 transition">Distribuidores</button>
+                    <button onclick="filtrar('Tabacaria')" class="px-6 py-2 bg-green-900/30 border border-green-500/50 text-green-400 rounded-full text-xs font-bold uppercase hover:bg-green-900/50 transition">Tabacarias</button>
+                    <button onclick="filtrar('Varejo')" class="px-6 py-2 bg-purple-900/30 border border-purple-500/50 text-purple-400 rounded-full text-xs font-bold uppercase hover:bg-purple-900/50 transition">Varejo</button>
+                </div>
+
+                <!-- TABELA -->
+                <div class="bg-gray-800/40 backdrop-blur-md rounded-3xl border border-gray-700 overflow-hidden shadow-2xl">
+                    <table class="w-full text-left">
+                        <thead class="bg-black/40 text-gray-400 text-xs uppercase tracking-widest">
+                            <tr>
+                                <th class="p-6">Nome / Loja</th>
+                                <th class="p-6">Categoria</th>
+                                <th class="p-6">Cidade</th>
+                                <th class="p-6 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaClientes" class="divide-y divide-gray-800 text-white">
+                            <tr><td colspan="4" class="p-20 text-center text-gray-500 italic">Buscando parceiros...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
+        <div class="bg-gray-800 p-8 rounded-3xl border border-gray-700 w-full max-w-md text-white">
+            <h3 class="text-xl font-bold text-green-500 mb-6">Cadastrar Parceiro</h3>
+            <form id="formCliente" class="space-y-4 text-white">
+                <div>
+                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Nome da Loja</label>
+                    <input type="text" id="nome_loja" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white" required>
+                </div>
+
+                <div>
+                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Nome do Contato (Opcional)</label>
+                    <input type="text" id="nome_contato" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Categoria</label>
+                    <select id="categoria" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white">
+                        <option value="Tabacaria">Tabacaria (B2B)</option>
+                        <option value="Distribuidor">Distribuidor (Volume)</option>
+                        <option value="Varejo">Varejo (Final)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Cidade / Região</label>
+                    <input type="text" id="cidade" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-gray-500 outline-none mt-1 text-white">
+                </div>
+
+                <div class="flex gap-3 pt-6">
+                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-700 p-4 rounded-xl font-bold">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-green-600 p-4 rounded-xl font-bold">Salvar 🚀</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../supabaseClient.js';
+
+        async function loadUI() {
+            const [sb, hd] = await Promise.all([
+                fetch('../sidebar.html').then(r => r.text()),
+                fetch('../header.html').then(r => r.text())
+            ]);
+            document.getElementById('sidebar-container').innerHTML = sb;
+            document.getElementById('header-container').innerHTML = hd;
+            document.getElementById('page-title').innerText = "CRM - Gestão de Clientes";
+            fetchClientes();
+        }
+
+        async function fetchClientes() {
+            const tbody = document.getElementById('listaClientes');
+            const { data, error } = await supabase.from('clientes').select('*').order('nome_loja');
+            if (error) return;
+            renderTabela(data);
+        }
+
+        window.filtrar = async (cat) => {
+            const { data } = await supabase.from('clientes').select('*').eq('categoria', cat).order('nome_loja');
+            renderTabela(data);
+        };
+
+        function renderTabela(lista) {
+            const tbody = document.getElementById('listaClientes');
+            tbody.innerHTML = lista.map(c => `
+                <tr class="hover:bg-white/5 transition border-b border-gray-800/50">
+                    <td class="p-6 font-bold text-white">${c.nome_loja}</td>
+                    <td class="p-6 italic text-sm text-gray-400">${c.categoria || 'Tabacaria'}</td>
+                    <td class="p-6 font-mono text-xs uppercase text-green-500">${c.cidade || 'N/A'}</td>
+                    <td class="p-6 text-right">
+                        <button onclick="excluirCliente('${c.id}')" class="text-red-900 hover:text-red-500 text-xs font-bold transition">EXCLUIR</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        window.abrirModal = () => document.getElementById('modal').classList.replace('hidden', 'flex');
+        window.fecharModal = () => document.getElementById('modal').classList.replace('flex', 'hidden');
+
+        document.getElementById('formCliente').onsubmit = async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.from('clientes').insert([{
+                nome_loja: document.getElementById('nome_loja').value,
+                nome_contato: document.getElementById('nome_contato').value || "Não informado",
+                categoria: document.getElementById('categoria').value,
+                cidade: document.getElementById('cidade').value
+            }]);
+
+            if (error) {
+                console.error(error);
+                alert("Erro ao salvar: " + error.message);
+            } else {
+                fecharModal();
+                fetchClientes();
+            }
+        };
+
+        window.excluirCliente = async (id) => {
+            if(confirm("Deseja remover este cliente?")) {
+                await supabase.from('clientes').delete().eq('id', id);
+                fetchClientes();
+            }
+        };
+
+        loadUI();
+    </script>
+</body>
+</html>

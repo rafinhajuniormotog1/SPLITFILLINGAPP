@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splitfilling - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white font-sans flex items-center justify-center h-screen w-screen p-6">
+
+    <div class="w-full max-w-sm bg-gray-900/50 p-10 rounded-[40px] border border-gray-800 shadow-2xl backdrop-blur-xl">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-black text-green-500 uppercase tracking-tighter italic">Splitfilling</h1>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Distribuição de Tabaco Orgânico 🚀</p>
+        </div>
+
+        <form id="formLogin" class="space-y-5">
+            <div>
+                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">E-mail Administrativo</label>
+                <input type="email" id="email" class="w-full bg-black p-4 rounded-2xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm transition-all" placeholder="seu@email.com" required>
+            </div>
+
+            <div>
+                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Senha de Acesso</label>
+                <input type="password" id="senha" class="w-full bg-black p-4 rounded-2xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm transition-all" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-black font-black p-5 rounded-2xl transition-all uppercase tracking-widest text-sm shadow-lg shadow-green-900/20 active:scale-95">
+                Entrar no Painel 🔑
+            </button>
+        </form>
+
+        <p id="msg-erro" class="text-center text-[10px] text-red-500 mt-6 hidden font-bold uppercase tracking-widest"></p>
+        
+        <div class="mt-10 text-center">
+            <p class="text-[10px] text-gray-600 uppercase font-bold italic">Operação Campinas e Região</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './src/supabaseClient.js';
+
+        // Se o usuário já estiver logado, pula o login automaticamente
+        async function verificarSessao() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) window.location.href = './src/pages/dashboard.html';
+        }
+
+        document.getElementById('formLogin').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('senha').value;
+            const errorElement = document.getElementById('msg-erro');
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                errorElement.innerText = "Erro: " + error.message;
+                errorElement.classList.remove('hidden');
+            } else {
+                window.location.href = './src/pages/dashboard.html';
+            }
+        };
+
+        verificarSessao();
+    </script>
+</body>
+</html>

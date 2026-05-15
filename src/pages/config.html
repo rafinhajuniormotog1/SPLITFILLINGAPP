@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splitfilling - Configurações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .main-content { height: calc(100vh - 80px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans overflow-hidden">
+    <div class="flex h-screen w-screen">
+        <div id="sidebar-container"></div>
+
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <div id="header-container"></div>
+
+            <main class="main-content overflow-y-auto p-10 bg-black/30 no-scrollbar">
+                
+                <div class="flex flex-col gap-8 max-w-4xl">
+                    <div>
+                        <h2 class="text-3xl font-bold text-green-500 italic">Configurações do Sistema</h2>
+                        <p class="text-gray-500 text-sm">Gerenciamento de conexões e guia de uso da plataforma.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-gray-800/40 p-6 rounded-3xl border border-gray-700 shadow-2xl space-y-4">
+                            <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
+                                🔗 Conexão Base de Dados
+                            </h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Provedor</label>
+                                    <div class="w-full bg-gray-900 p-3 rounded-xl border border-gray-800 text-sm font-mono text-gray-400">
+                                        Supabase Cloud Storage
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Status do Motor Local</label>
+                                    <div class="flex items-center gap-2 w-full bg-gray-900 p-3 rounded-xl border border-gray-800 text-sm text-green-400 font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                        Servidor Local Ativo (Porta 3000)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-800/40 p-6 rounded-3xl border border-gray-700 shadow-2xl space-y-4">
+                            <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
+                                🌿 Dados de Operação
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <p class="text-gray-400">Empresa: <span class="text-white font-bold">Splitfilling</span></p>
+                                <p class="text-gray-400">Segmento: <span class="text-white font-bold">Distribuição de Tabaco Orgânico</span></p>
+                                <p class="text-gray-400">Região de Atuação Mestre: <span class="text-white font-bold">Campinas e Região</span></p>
+                                <p class="text-gray-400">Ambiente: <span class="px-2 py-0.5 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 rounded text-xs uppercase font-bold tracking-wider">Desenvolvimento Local</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/20 rounded-3xl border border-gray-800 p-6 space-y-4">
+                        <h3 class="text-lg font-bold text-green-500 flex items-center gap-2">
+                            📖 Manual de Uso Rápido (Dia a Dia)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-bold text-white mb-1">1. Abastecer Estoque</p>
+                                <p class="text-gray-500">Cadastre ou adicione pacotes de tabaco na aba ESTOQUE/PRODUTOS antes de iniciar as vendas.</p>
+                            </div>
+                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-bold text-white mb-1">2. Mapear Lojistas</p>
+                                <p class="text-gray-500">Insira as tabacarias da região no CRM/Clientes para controlar quem compra com recorrência.</p>
+                            </div>
+                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-bold text-white mb-1">3. Vendas e Prazos</p>
+                                <p class="text-gray-500">Lance pedidos no PDV. Defina se foi à vista ou a prazo com vencimento personalizado.</p>
+                            </div>
+                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-bold text-white mb-1">4. Controlar Caixa</p>
+                                <p class="text-gray-500">Monitore gastos na aba Finanças, dê baixa em cobranças e acompanhe o faturamento real.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        async function init() {
+            // Puxa o menu lateral e topo dinâmicos
+            const [sb, hd] = await Promise.all([
+                fetch('../sidebar.html').then(r => r.text()),
+                fetch('../header.html').then(r => r.text())
+            ]);
+            document.getElementById('sidebar-container').innerHTML = sb;
+            document.getElementById('header-container').innerHTML = hd;
+            document.getElementById('page-title').innerText = "Configurações Globais";
+        }
+
+        init();
+    </script>
+</body>
+</html>

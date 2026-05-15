@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Splitfilling - Dashboard Executiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .main-content { height: calc(100vh - 80px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans overflow-hidden">
+    
+    <div class="flex h-screen w-screen">
+        <div id="sidebar-container"></div>
+
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <div id="header-container"></div>
+
+            <main class="main-content overflow-y-auto p-8 bg-black/40 no-scrollbar">
+                
+                <!-- CABEÇALHO E FILTROS -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold italic text-green-500">Visão Geral</h2>
+                        <p class="text-gray-500 text-sm">Acompanhe a saúde financeira da Splitfilling.</p>
+                    </div>
+                    <div class="flex gap-2 bg-gray-800 p-2 rounded-2xl border border-gray-700">
+                        <input type="date" id="data-inicio" class="bg-transparent text-xs p-2 outline-none border-r border-gray-700">
+                        <input type="date" id="data-fim" class="bg-transparent text-xs p-2 outline-none">
+                        <button onclick="loadDashboardData()" class="bg-green-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-700 transition">Filtrar</button>
+                    </div>
+                </div>
+
+                <!-- CARDS PRINCIPAIS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Vendas no Período</p>
+                        <h3 id="vendas-total" class="text-3xl font-bold mt-2 font-mono">R$ 0,00</h3>
+                    </div>
+                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Patrimônio (Custo)</p>
+                        <h3 id="custo-estoque" class="text-3xl font-bold mt-2 text-blue-400 font-mono">R$ 0,00</h3>
+                    </div>
+                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Estoque (Qtd Total)</p>
+                        <h3 id="qtd-estoque" class="text-3xl font-bold mt-2 text-green-400 font-mono">0 un</h3>
+                    </div>
+                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Clientes Ativos</p>
+                        <h3 id="clientes-total" class="text-3xl font-bold mt-2 text-white font-mono">0</h3>
+                    </div>
+                </div>
+
+                <!-- GRÁFICO DE VENDAS -->
+                <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 mb-8 shadow-2xl">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Tendência de Faturamento</h4>
+                    <div class="h-64 w-full">
+                        <canvas id="chartVendas"></canvas>
+                    </div>
+                </div>
+
+                <!-- EXTRATO DE VENDAS (RODAPÉ) -->
+                <div class="bg-gray-800/20 rounded-3xl border border-gray-800 overflow-hidden">
+                    <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+                        <h4 class="text-sm font-bold uppercase tracking-widest">Extrato de Movimentação</h4>
+                        <span class="text-[10px] bg-green-500/10 text-green-500 px-3 py-1 rounded-full font-bold">LIVE</span>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead class="bg-black/20 text-gray-500 text-[10px] uppercase">
+                            <tr>
+                                <th class="p-5">Data / Hora</th>
+                                <th class="p-5">Cliente</th>
+                                <th class="p-5 text-right">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-extrato" class="divide-y divide-gray-800/50">
+                            <!-- Inserido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../supabaseClient.js';
+
+        let chartInstance = null;
+
+        async function loadUI() {
+            const [sb, hd] = await Promise.all([
+                fetch('../sidebar.html').then(r => r.text()),
+                fetch('../header.html').then(r => r.text())
+            ]);
+            document.getElementById('sidebar-container').innerHTML = sb;
+            document.getElementById('header-container').innerHTML = hd;
+            document.getElementById('page-title').innerText = "Painel de Controle Principal";
+            
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            const dataInicio = document.getElementById('data-inicio').value;
+            const dataFim = document.getElementById('data-fim').value;
+
+            // 1. Dados de Estoque (Custo e Qtd)
+            const { data: produtos } = await supabase.from('produtos').select('estoque_atual, preco_custo');
+            if (produtos) {
+                const totalQtd = produtos.reduce((acc, p) => acc + (p.estoque_atual || 0), 0);
+                const totalCusto = produtos.reduce((acc, p) => acc + ((p.estoque_atual || 0) * (p.preco_custo || 0)), 0);
+                document.getElementById('qtd-estoque').innerText = `${totalQtd} un`;
+                document.getElementById('custo-estoque').innerText = `R$ ${totalCusto.toFixed(2)}`;
+            }
+
+            // 2. Dados de Clientes
+            const { count } = await supabase.from('clientes').select('*', { count: 'exact', head: true });
+            document.getElementById('clientes-total').innerText = count || 0;
+
+            // 3. Vendas e Gráfico
+            let queryVendas = supabase.from('vendas').select('*, clientes(nome_loja)').order('data_venda', { ascending: true });
+            
+            if (dataInicio) queryVendas = queryVendas.gte('data_venda', dataInicio);
+            if (dataFim) queryVendas = queryVendas.lte('data_venda', dataFim);
+
+            const { data: vendas } = await queryVendas;
+
+            if (vendas) {
+                const totalVendas = vendas.reduce((acc, v) => acc + (v.valor_total || 0), 0);
+                document.getElementById('vendas-total').innerText = `R$ ${totalVendas.toFixed(2)}`;
+                
+                renderExtrato(vendas);
+                renderChart(vendas);
+            }
+        }
+
+        function renderExtrato(vendas) {
+            const tbody = document.getElementById('lista-extrato');
+            const ultimas = [...vendas].reverse().slice(0, 5); // Pega as 5 últimas
+            
+            tbody.innerHTML = ultimas.map(v => `
+                <tr class="text-sm hover:bg-white/5 transition">
+                    <td class="p-5 text-gray-500">${new Date(v.data_venda).toLocaleDateString()}</td>
+                    <td class="p-5 font-bold">${v.clientes?.nome_loja || 'Cliente Direto'}</td>
+                    <td class="p-5 text-right font-mono text-green-400">R$ ${v.valor_total.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderChart(vendas) {
+            const ctx = document.getElementById('chartVendas').getContext('2d');
+            
+            // Agrupar vendas por dia
+            const labels = [...new Set(vendas.map(v => new Date(v.data_venda).toLocaleDateString()))];
+            const dataValues = labels.map(label => {
+                return vendas
+                    .filter(v => new Date(v.data_venda).toLocaleDateString() === label)
+                    .reduce((acc, v) => acc + v.valor_total, 0);
+            });
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Vendas (R$)',
+                        data: dataValues,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#22c55e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        }
+
+        loadUI();
+    </script>
+</body>
+</html>

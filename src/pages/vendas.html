@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Splitfilling - PDV Profissional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .main-content { height: calc(100vh - 80px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans overflow-hidden">
+    
+    <div class="flex h-screen w-screen">
+        <div id="sidebar-container"></div>
+
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <div id="header-container"></div>
+
+            <main class="main-content overflow-y-auto p-10 bg-black/30 no-scrollbar">
+                
+                <div id="setup-venda" class="flex flex-col items-center justify-center h-full">
+                    <div class="bg-gray-800 p-10 rounded-3xl border border-gray-700 shadow-2xl w-full max-w-lg">
+                        <div class="text-center">
+                            <div class="text-5xl mb-6 text-green-500">🛒</div>
+                            <h2 class="text-2xl font-bold mb-2">Novo Atendimento</h2>
+                            <p class="text-gray-400 mb-8">Configure os detalhes da operação</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Selecione o Cliente</label>
+                                <select id="select-cliente" class="w-full bg-gray-900 p-4 rounded-2xl border border-gray-700 focus:border-green-500 outline-none text-white mt-1">
+                                    <option value="">Carregando clientes...</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Status de Pagamento</label>
+                                    <select id="status-pagamento" onchange="toggleVencimento()" class="w-full bg-gray-900 p-4 rounded-2xl border border-gray-700 focus:border-green-500 outline-none text-white mt-1">
+                                        <option value="pago">Já Pago (À Vista)</option>
+                                        <option value="pendente">Consignado (A Prazo)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Data da Venda</label>
+                                    <input type="datetime-local" id="data-venda-input" class="w-full bg-gray-900 p-4 rounded-2xl border border-gray-700 focus:border-green-500 outline-none text-white mt-1">
+                                </div>
+                            </div>
+
+                            <div id="campo-vencimento" class="hidden">
+                                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1 text-yellow-500">Data de Vencimento</label>
+                                <input type="date" id="data-vencimento-input" class="w-full bg-gray-900 p-4 rounded-2xl border border-yellow-500/50 focus:border-yellow-500 outline-none text-white mt-1">
+                            </div>
+                        </div>
+                        
+                        <button onclick="iniciarVenda()" class="w-full bg-green-600 hover:bg-green-700 p-5 rounded-2xl font-bold text-xl transition shadow-lg shadow-green-900/30 mt-8">
+                            Abrir Caixa 🚀
+                        </button>
+                    </div>
+                </div>
+
+                <div id="caixa-operacional" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                    
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-gray-800/60 p-8 rounded-3xl border border-gray-700 shadow-xl">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex flex-col">
+                                    <h3 class="text-xl font-bold text-green-500 italic">Cliente: <span id="display-cliente" class="text-white not-italic"></span></h3>
+                                    <span id="display-info" class="text-[10px] text-gray-500 font-mono"></span>
+                                </div>
+                                <button onclick="location.reload()" class="text-xs text-red-500 hover:underline uppercase font-bold">Cancelar / Trocar</button>
+                            </div>
+                            
+                            <div class="grid grid-cols-12 gap-4">
+                                <div class="col-span-7">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Produto</label>
+                                    <select id="select-produto" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white"></select>
+                                </div>
+                                <div class="col-span-3">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Qtd</label>
+                                    <input type="number" id="input-qtd" value="1" min="1" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white text-center">
+                                </div>
+                                <div class="col-span-2 flex items-end">
+                                    <button onclick="adicionarItem()" class="w-full bg-green-600 hover:bg-green-700 h-[58px] rounded-xl font-bold text-2xl transition">＋</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-800/40 rounded-3xl border border-gray-700 overflow-hidden min-h-[300px]">
+                            <table class="w-full text-left">
+                                <thead class="bg-black/40 text-gray-400 text-xs uppercase tracking-widest">
+                                    <tr>
+                                        <th class="p-5">Produto</th>
+                                        <th class="p-5 text-center">Qtd</th>
+                                        <th class="p-5 text-center">Subtotal</th>
+                                        <th class="p-5"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="carrinho" class="divide-y divide-gray-800"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-6">
+                        <div class="bg-green-600 p-10 rounded-3xl shadow-xl shadow-green-900/20 text-center">
+                            <p class="text-green-100 text-xs font-bold uppercase tracking-widest">Total Geral</p>
+                            <h2 id="total-venda" class="text-6xl font-bold mt-2 font-mono">R$ 0,00</h2>
+                        </div>
+
+                        <div class="bg-gray-800 p-8 rounded-3xl border border-gray-700 space-y-4">
+                            <button id="btn-finalizar" onclick="finalizarVenda()" class="w-full bg-white text-black p-6 rounded-2xl font-bold text-xl hover:bg-gray-200 transition">
+                                Salvar Venda 💰
+                            </button>
+                            <button id="btn-pdf" onclick="gerarPDF()" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-bold hidden hover:bg-blue-700 transition">
+                                🖨️ Imprimir PDF
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../supabaseClient.js';
+
+        let itensVenda = [];
+        let todosProdutos = [];
+        let clienteFinalNome = "";
+        let clienteFinalId = "";
+        let dataVendaSelecionada = "";
+        let statusPagamento = "pago";
+        let dataVencimento = null;
+
+        // Mostrar/Ocultar campo de vencimento
+        window.toggleVencimento = () => {
+            const status = document.getElementById('status-pagamento').value;
+            const campo = document.getElementById('campo-vencimento');
+            if (status === 'pendente') {
+                campo.classList.remove('hidden');
+            } else {
+                campo.classList.add('hidden');
+            }
+        };
+
+        async function loadPage() {
+            try {
+                const [sb, hd] = await Promise.all([
+                    fetch('../sidebar.html').then(r => r.text()),
+                    fetch('../header.html').then(r => r.text())
+                ]);
+                document.getElementById('sidebar-container').innerHTML = sb;
+                document.getElementById('header-container').innerHTML = hd;
+                document.getElementById('page-title').innerText = "Frente de Caixa";
+                
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.getElementById('data-venda-input').value = now.toISOString().slice(0, 16);
+
+                await carregarDadosIniciais();
+            } catch (e) {
+                console.error("Erro ao carregar layout:", e);
+            }
+        }
+
+        async function carregarDadosIniciais() {
+            const { data: clientes, error: errCli } = await supabase.from('clientes').select('*');
+            if (errCli) {
+                console.error("Erro clientes:", errCli);
+                document.getElementById('select-cliente').innerHTML = `<option>Erro</option>`;
+            } else {
+                const selectCli = document.getElementById('select-cliente');
+                selectCli.innerHTML = '<option value="">-- Escolha um Cliente --</option>';
+                clientes.forEach(c => {
+                    const nomeParaExibir = c.nome_loja || c.nome || "Cliente sem nome";
+                    selectCli.innerHTML += `<option value="${c.id}">${nomeParaExibir}</option>`;
+                });
+            }
+
+            const { data: produtos, error: errProd } = await supabase.from('produtos').select('*');
+            if (errProd) console.error("Erro produtos:", errProd);
+            else {
+                todosProdutos = produtos;
+                const selectProd = document.getElementById('select-produto');
+                selectProd.innerHTML = produtos.map(p => `<option value="${p.id}">${p.nome} - R$ ${p.preco_venda.toFixed(2)}</option>`).join('');
+            }
+        }
+
+        window.iniciarVenda = () => {
+            const selectCli = document.getElementById('select-cliente');
+            if (!selectCli.value) return alert("Por favor, selecione um cliente!");
+
+            statusPagamento = document.getElementById('status-pagamento').value;
+            if (statusPagamento === 'pendente' && !document.getElementById('data-vencimento-input').value) {
+                return alert("Defina uma data de vencimento para venda a prazo!");
+            }
+
+            clienteFinalId = selectCli.value;
+            clienteFinalNome = selectCli.options[selectCli.selectedIndex].text;
+            dataVendaSelecionada = document.getElementById('data-venda-input').value;
+            dataVencimento = document.getElementById('data-vencimento-input').value;
+
+            document.getElementById('display-cliente').innerText = clienteFinalNome;
+            document.getElementById('display-info').innerText = `Data: ${new Date(dataVendaSelecionada).toLocaleString()} | Status: ${statusPagamento.toUpperCase()}`;
+            
+            document.getElementById('setup-venda').classList.add('hidden');
+            document.getElementById('caixa-operacional').classList.remove('hidden');
+        };
+
+        window.adicionarItem = () => {
+            const id = document.getElementById('select-produto').value;
+            const qtd = parseInt(document.getElementById('input-qtd').value);
+            const produto = todosProdutos.find(p => p.id === id);
+            const itemExistente = itensVenda.find(i => i.id === id);
+            if (itemExistente) itemExistente.qtd += qtd;
+            else itensVenda.push({ ...produto, qtd });
+            renderCarrinho();
+        };
+
+        function renderCarrinho() {
+            const tbody = document.getElementById('carrinho');
+            let total = 0;
+            tbody.innerHTML = itensVenda.map((item, index) => {
+                const sub = item.preco_venda * item.qtd;
+                total += sub;
+                return `
+                    <tr class="border-b border-gray-800">
+                        <td class="p-5 font-bold">${item.nome}</td>
+                        <td class="p-5 text-center text-green-400">${item.qtd}</td>
+                        <td class="p-5 text-center font-mono">R$ ${sub.toFixed(2)}</td>
+                        <td class="p-5 text-right"><button onclick="removerItem(${index})" class="text-red-500 hover:text-red-300">✕</button></td>
+                    </tr>`;
+            }).join('');
+            document.getElementById('total-venda').innerText = `R$ ${total.toFixed(2)}`;
+        }
+
+        window.removerItem = (index) => {
+            itensVenda.splice(index, 1);
+            renderCarrinho();
+        };
+
+        window.finalizarVenda = async () => {
+            if (itensVenda.length === 0) return alert("Carrinho vazio!");
+            const total = parseFloat(document.getElementById('total-venda').innerText.replace('R$ ', ''));
+            
+            const { error } = await supabase.from('vendas').insert([{
+                cliente_id: clienteFinalId,
+                valor_total: total,
+                data_venda: new Date(dataVendaSelecionada).toISOString(),
+                status: statusPagamento,
+                data_vencimento: statusPagamento === 'pendente' ? new Date(dataVencimento).toISOString() : null
+            }]);
+
+            if (error) alert("Erro ao salvar: " + error.message);
+            else {
+                alert("Venda registrada com sucesso! " + (statusPagamento === 'pendente' ? "Ficou como pendente no sistema." : ""));
+                document.getElementById('btn-finalizar').classList.add('hidden');
+                document.getElementById('btn-pdf').classList.remove('hidden');
+            }
+        };
+
+        window.gerarPDF = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("RECIBO SPLITFILLING", 10, 10);
+            doc.text(`Cliente: ${clienteFinalNome}`, 10, 20);
+            doc.text(`Status: ${statusPagamento === 'pago' ? 'PAGO' : 'A PRAZO'}`, 10, 30);
+            if (statusPagamento === 'pendente') doc.text(`Vencimento: ${new Date(dataVencimento).toLocaleDateString()}`, 10, 40);
+            
+            let y = statusPagamento === 'pendente' ? 50 : 40;
+            doc.text("------------------------------------------", 10, y);
+            y += 10;
+            itensVenda.forEach(i => {
+                doc.text(`${i.nome} x${i.qtd} - R$ ${(i.preco_venda * i.qtd).toFixed(2)}`, 10, y);
+                y += 10;
+            });
+            doc.text(`TOTAL: ${document.getElementById('total-venda').innerText}`, 10, y + 10);
+            doc.save(`venda_splitfilling.pdf`);
+        };
+
+        loadPage();
+    </script>
+</body>
+</html>
