@@ -18,69 +18,75 @@
         <div class="flex flex-col flex-1 overflow-hidden">
             <div id="header-container"></div>
 
-            <main class="main-content overflow-y-auto p-10 bg-black/30 no-scrollbar">
+            <main class="main-content overflow-y-auto p-6 md:p-10 bg-black/30 no-scrollbar">
                 
-                <div class="flex flex-col gap-8 max-w-4xl">
-                    <div>
-                        <h2 class="text-3xl font-bold text-green-500 italic">Configurações do Sistema</h2>
-                        <p class="text-gray-500 text-sm">Gerenciamento de conexões e guia de uso da plataforma.</p>
+                <div class="flex flex-col gap-8 max-w-4xl mx-auto mt-6 lg:mt-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-6">
+                        <div>
+                            <h2 class="text-3xl font-black text-green-500 italic uppercase tracking-tight">Configurações</h2>
+                            <p class="text-gray-500 text-xs uppercase tracking-wider mt-1">Gerenciamento do ecossistema e controle de acesso.</p>
+                        </div>
+                        
+                        <button id="btn-logout" class="bg-red-950/40 hover:bg-red-600 border border-red-500/30 hover:border-transparent text-red-400 hover:text-white font-black px-6 py-3 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                            <span>Sair do Sistema</span> ➔
+                        </button>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="bg-gray-800/40 p-6 rounded-3xl border border-gray-700 shadow-2xl space-y-4">
-                            <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
-                                🔗 Conexão Base de Dados
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-800/40 p-6 rounded-[32px] border border-gray-800 shadow-2xl space-y-4">
+                            <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest flex items-center gap-2">
+                                🔗 Base de Dados & Nuvem
                             </h3>
                             <div class="space-y-3">
                                 <div>
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Provedor</label>
-                                    <div class="w-full bg-gray-900 p-3 rounded-xl border border-gray-800 text-sm font-mono text-gray-400">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Provedor Principal</label>
+                                    <div class="w-full bg-black p-4 rounded-xl border border-gray-800 text-xs font-mono text-gray-400">
                                         Supabase Cloud Storage
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Status do Motor Local</label>
-                                    <div class="flex items-center gap-2 w-full bg-gray-900 p-3 rounded-xl border border-gray-800 text-sm text-green-400 font-bold">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Status do Ambiente</label>
+                                    <div class="flex items-center gap-2 w-full bg-black p-4 rounded-xl border border-gray-800 text-xs text-green-400 font-bold">
                                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                        Servidor Local Ativo (Porta 3000)
+                                        Produção Online (Vercel)
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-800/40 p-6 rounded-3xl border border-gray-700 shadow-2xl space-y-4">
-                            <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
-                                🌿 Dados de Operação
+                        <div class="bg-gray-800/40 p-6 rounded-[32px] border border-gray-800 shadow-2xl space-y-4">
+                            <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest flex items-center gap-2">
+                                🌿 Dados da Distribuidora
                             </h3>
-                            <div class="space-y-2 text-sm">
-                                <p class="text-gray-400">Empresa: <span class="text-white font-bold">Splitfilling</span></p>
-                                <p class="text-gray-400">Segmento: <span class="text-white font-bold">Distribuição de Tabaco Orgânico</span></p>
-                                <p class="text-gray-400">Região de Atuação Mestre: <span class="text-white font-bold">Campinas e Região</span></p>
-                                <p class="text-gray-400">Ambiente: <span class="px-2 py-0.5 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 rounded text-xs uppercase font-bold tracking-wider">Desenvolvimento Local</span></p>
+                            <div class="space-y-3 text-xs bg-black p-5 rounded-xl border border-gray-800">
+                                <p class="text-gray-500 uppercase font-bold">Empresa: <span class="text-white ml-1 font-black">Splitfilling</span></p>
+                                <p class="text-gray-500 uppercase font-bold">Segmento: <span class="text-white ml-1 font-black">Tabaco Orgânico</span></p>
+                                <p class="text-gray-500 uppercase font-bold">Região Mestre: <span class="text-white ml-1 font-black">Campinas e Região</span></p>
+                                <p class="text-gray-500 uppercase font-bold">Logística SP Capital: <span class="text-green-500 ml-1 font-black">Conectado</span></p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-gray-800/20 rounded-3xl border border-gray-800 p-6 space-y-4">
-                        <h3 class="text-lg font-bold text-green-500 flex items-center gap-2">
-                            📖 Manual de Uso Rápido (Dia a Dia)
+                    <div class="bg-gray-800/20 rounded-[32px] border border-gray-800 p-6 space-y-4">
+                        <h3 class="text-sm font-black text-green-500 uppercase tracking-widest flex items-center gap-2">
+                            📖 Manual Prático da Operação (Multi-Usuário)
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-bold text-white mb-1">1. Abastecer Estoque</p>
-                                <p class="text-gray-500">Cadastre ou adicione pacotes de tabaco na aba ESTOQUE/PRODUTOS antes de iniciar as vendas.</p>
+                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-black text-white mb-1 uppercase tracking-tight">1. Estoque Único</p>
+                                <p class="text-gray-500">Você e seu sócio compartilham o mesmo inventário de tabaco. Alterou aqui, muda lá.</p>
                             </div>
-                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-bold text-white mb-1">2. Mapear Lojistas</p>
-                                <p class="text-gray-500">Insira as tabacarias da região no CRM/Clientes para controlar quem compra com recorrência.</p>
+                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-black text-white mb-1 uppercase tracking-tight">2. Vendas na Rua</p>
+                                <p class="text-gray-500">Lance as vendas no PDV pelo celular. O sistema calcula os prazos de recebimento na hora.</p>
                             </div>
-                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-bold text-white mb-1">3. Vendas e Prazos</p>
-                                <p class="text-gray-500">Lance pedidos no PDV. Defina se foi à vista ou a prazo com vencimento personalizado.</p>
+                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-black text-white mb-1 uppercase tracking-tight">3. Fluxo Integrado</p>
+                                <p class="text-gray-500">As despesas de logística e faturamento são somadas em tempo real na aba de Finanças.</p>
                             </div>
-                            <div class="bg-black/20 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-bold text-white mb-1">4. Controlar Caixa</p>
-                                <p class="text-gray-500">Monitore gastos na aba Finanças, dê baixa em cobranças e acompanhe o faturamento real.</p>
+                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
+                                <p class="font-black text-white mb-1 uppercase tracking-tight">4. Segurança</p>
+                                <p class="text-gray-500">Sempre saia do sistema usando o botão acima se estiver usando um aparelho compartilhado.</p>
                             </div>
                         </div>
                     </div>
@@ -91,6 +97,8 @@
     </div>
 
     <script type="module">
+        import { supabase } from '../supabaseClient.js';
+
         async function init() {
             // Puxa o menu lateral e topo dinâmicos
             const [sb, hd] = await Promise.all([
@@ -100,6 +108,17 @@
             document.getElementById('sidebar-container').innerHTML = sb;
             document.getElementById('header-container').innerHTML = hd;
             document.getElementById('page-title').innerText = "Configurações Globais";
+
+            // Lógica do Botão Deslogar / Sair da Conta
+            document.getElementById('btn-logout').onclick = async () => {
+                const { error } = await supabase.auth.signOut();
+                if (error) {
+                    alert("Erro ao sair: " + error.message);
+                } else {
+                    // Manda de volta para a tela de login na raiz
+                    window.location.href = '../../index.html';
+                }
+            };
         }
 
         init();
