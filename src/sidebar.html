@@ -1,49 +1,49 @@
-<button id="btn-hamburguer" class="no-print lg:hidden fixed top-4 left-4 z-[150] bg-green-600 p-3 rounded-xl shadow-lg text-black font-black text-xs uppercase tracking-wider transition active:scale-95">
+<button id="btn-hamburguer" class="no-print lg:hidden fixed top-4 left-4 z-[200] bg-green-500 hover:bg-green-400 text-black font-black text-xs uppercase tracking-widest px-4 py-3 rounded-xl shadow-2xl transition active:scale-95">
     ☰ Menu
 </button>
 
-<aside id="sidebar" class="no-print w-64 bg-black border-r border-gray-800 flex flex-col flex-shrink-0 h-screen fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 transition-transform duration-300 z-[140] shadow-2xl">
+<aside id="sidebar" class="no-print w-64 bg-black border-r border-gray-800 flex flex-col flex-shrink-0 h-screen fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 transition-transform duration-300 z-[190] shadow-2xl">
     
-    <div class="p-8 mt-12 lg:mt-0 border-b border-gray-900 mb-4">
+    <div class="p-6 mt-16 lg:mt-0 border-b border-gray-900 mb-4">
         <h1 class="text-2xl font-black text-green-500 uppercase tracking-tighter italic">Splitfilling</h1>
         <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Painel de Controle 🚀</p>
     </div>
 
-    <nav class="px-4 space-y-3">
+    <nav class="px-4 space-y-2.5">
         <p class="text-[10px] text-gray-600 uppercase font-bold ml-2 mb-1 tracking-widest">Início</p>
         
-        <a href="dashboard.html" class="flex items-center gap-3 p-4 text-white bg-gray-800/40 hover:bg-green-600 rounded-2xl transition-all group border border-gray-800/50 hover:border-transparent">
-            <span class="text-xl">📊</span>
-            <span class="font-black tracking-tight text-sm">Dashboard</span>
+        <a href="dashboard.html" class="flex items-center gap-3 p-3.5 text-white bg-gray-800/40 hover:bg-green-600 rounded-2xl transition-all group border border-gray-800/50 hover:border-transparent">
+            <span class="text-lg">📊</span>
+            <span class="font-bold text-sm tracking-tight">Dashboard</span>
         </a>
 
-        <a href="vendas.html" class="flex items-center gap-3 p-4 text-white bg-green-700 hover:bg-green-600 rounded-2xl transition-all group border border-green-600/30">
-            <span class="text-xl">💰</span>
-            <span class="font-black tracking-tight text-sm">CAIXA / PDV</span>
+        <a href="vendas.html" class="flex items-center gap-3 p-3.5 text-white bg-green-700 hover:bg-green-600 rounded-2xl transition-all group border border-green-600/30">
+            <span class="text-lg">💰</span>
+            <span class="font-bold text-sm tracking-tight">CAIXA / PDV</span>
         </a>
 
-        <a href="financas.html" class="flex items-center gap-3 p-4 text-white bg-blue-950/40 border border-blue-500/20 hover:bg-blue-600 rounded-2xl transition-all group">
-            <span class="text-xl">💸</span>
-            <span class="font-black tracking-tight text-sm">FLUXO DE CAIXA</span>
+        <a href="financas.html" class="flex items-center gap-3 p-3.5 text-white bg-blue-950/40 border border-blue-500/20 hover:bg-blue-600 rounded-2xl transition-all group">
+            <span class="text-lg">💸</span>
+            <span class="font-bold text-sm tracking-tight">FLUXO DE CAIXA</span>
         </a>
     </nav>
 
-    <nav class="mt-8 px-4 space-y-2">
+    <nav class="mt-6 px-4 space-y-1.5">
         <p class="text-[10px] text-gray-600 uppercase font-bold ml-2 mb-1 tracking-widest">Gestão</p>
         
         <a href="estoque.html" class="flex items-center gap-3 p-3 text-gray-400 hover:bg-gray-900 hover:text-white rounded-xl transition">
             <span>📦</span>
-            <span class="font-bold uppercase text-xs tracking-wider">ESTOQUE / PRODUTOS</span>
+            <span class="font-bold uppercase text-[11px] tracking-wider">ESTOQUE / PRODUTOS</span>
         </a>
 
         <a href="crm.html" class="flex items-center gap-3 p-3 text-gray-400 hover:bg-gray-900 hover:text-white rounded-xl transition">
             <span>👥</span>
-            <span class="font-bold uppercase text-xs tracking-wider">CRM / Clientes</span>
+            <span class="font-bold uppercase text-[11px] tracking-wider">CRM / Clientes</span>
         </a>
 
         <a href="relatorios.html" class="flex items-center gap-3 p-3 text-gray-400 hover:bg-gray-900 hover:text-white rounded-xl transition">
             <span>📑</span>
-            <span class="font-bold uppercase text-xs tracking-wider">Relatórios</span>
+            <span class="font-bold uppercase text-[11px] tracking-wider">Relatórios</span>
         </a>
     </nav>
 
@@ -55,16 +55,30 @@
     </nav>
 </aside>
 
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/60 hidden z-[180] lg:hidden backdrop-blur-sm"></div>
+
 <script>
-    // Nova lógica de clique super direta para telas touch de celular
-    document.getElementById('btn-hamburguer').onclick = function() {
+    (function() {
+        const btn = document.getElementById('btn-hamburguer');
         const sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('-translate-x-full')) {
-            sidebar.classList.remove('-translate-x-full');
-            this.innerText = "✕ Fechar";
-        } else {
-            sidebar.classList.add('-translate-x-full');
-            this.innerText = "☰ Menu";
+        const overlay = document.getElementById('sidebar-overlay');
+
+        function alternarMenu() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                btn.innerText = "✕ Fechar";
+                btn.classList.replace('bg-green-500', 'bg-red-600');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                btn.innerText = "☰ Menu";
+                btn.classList.replace('bg-red-600', 'bg-green-500');
+            }
         }
-    };
+
+        // Eventos de clique e toque rápido para celular
+        btn.addEventListener('click', alternarMenu);
+        overlay.addEventListener('click', alternarMenu);
+    })();
 </script>
