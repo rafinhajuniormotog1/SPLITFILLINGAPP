@@ -16,12 +16,12 @@
 
         <form id="formLogin" class="space-y-5">
             <div>
-                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">E-mail Administrativo</label>
+                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">E-mail de Acesso</label>
                 <input type="email" id="email" class="w-full bg-black p-4 rounded-2xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm transition-all" placeholder="seu@email.com" required>
             </div>
 
             <div>
-                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Senha de Acesso</label>
+                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Senha Secreta</label>
                 <input type="password" id="senha" class="w-full bg-black p-4 rounded-2xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm transition-all" placeholder="••••••••" required>
             </div>
 
@@ -40,10 +40,12 @@
     <script type="module">
         import { supabase } from './src/supabaseClient.js';
 
-        // Se o usuário já estiver logado, pula o login automaticamente
+        // Correção de Rota: Verifica a sessão sem usar caminhos relativos quebrados
         async function verificarSessao() {
             const { data: { session } } = await supabase.auth.getSession();
-            if (session) window.location.href = './src/pages/dashboard.html';
+            if (session) {
+                window.location.href = 'src/pages/dashboard.html';
+            }
         }
 
         document.getElementById('formLogin').onsubmit = async (e) => {
@@ -52,6 +54,7 @@
             const password = document.getElementById('senha').value;
             const errorElement = document.getElementById('msg-erro');
 
+            // Autenticação direta com o banco de dados
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password
@@ -61,7 +64,9 @@
                 errorElement.innerText = "Erro: " + error.message;
                 errorElement.classList.remove('hidden');
             } else {
-                window.location.href = './src/pages/dashboard.html';
+                errorElement.classList.add('hidden');
+                // Correção de Rota para o ambiente online da Vercel
+                window.location.href = 'src/pages/dashboard.html';
             }
         };
 
