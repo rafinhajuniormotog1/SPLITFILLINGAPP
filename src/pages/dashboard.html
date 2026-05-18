@@ -2,86 +2,104 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Splitfilling - Dashboard Executiva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splitfilling - Dashboard Mestre</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .main-content { height: calc(100vh - 80px); }
+        
+        /* Ajuste fino de altura para a rolagem interna */
+        .main-content { height: calc(100vh - 75px); }
+        @media (min-width: 1024px) { .main-content { height: calc(100vh - 80px); } }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans overflow-hidden">
+<body class="bg-gray-950 text-white font-sans overflow-hidden">
     
-    <div class="flex h-screen w-screen">
-        <div id="sidebar-container"></div>
+    <div class="flex h-screen w-screen overflow-hidden">
+        <div id="sidebar-container" class="no-print"></div>
 
-        <div class="flex flex-col flex-1 overflow-hidden">
-            <div id="header-container"></div>
+        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <div id="header-container" class="no-print"></div>
 
-            <main class="main-content overflow-y-auto p-8 bg-black/40 no-scrollbar">
+            <main class="main-content overflow-y-auto p-4 sm:p-6 md:p-8 bg-black/20 no-scrollbar pt-[90px] lg:pt-[100px]">
                 
-                <!-- CABEÇALHO E FILTROS -->
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div>
-                        <h2 class="text-3xl font-bold italic text-green-500">Visão Geral</h2>
-                        <p class="text-gray-500 text-sm">Acompanhe a saúde financeira da Splitfilling.</p>
+                <div class="max-w-6xl mx-auto space-y-6">
+                    
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-gray-900 pb-4">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-black italic text-green-500 uppercase tracking-tight">Visão Geral</h2>
+                            <p class="text-gray-500 text-xs uppercase tracking-wider mt-0.5">Saúde financeira em tempo real da distribuidora</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2 bg-gray-900 p-2.5 rounded-2xl border border-gray-800 w-full lg:w-auto">
+                            <div class="flex items-center flex-1 sm:flex-none">
+                                <span class="text-[10px] text-gray-500 uppercase font-black px-1">De:</span>
+                                <input type="date" id="data-inicio" class="bg-transparent text-xs p-1 outline-none text-white font-mono">
+                            </div>
+                            <div class="flex items-center flex-1 sm:flex-none border-l border-gray-800 pl-2">
+                                <span class="text-[10px] text-gray-500 uppercase font-black px-1">Até:</span>
+                                <input type="date" id="data-fim" class="bg-transparent text-xs p-1 outline-none text-white font-mono">
+                            </div>
+                            <button onclick="loadDashboardData()" class="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition active:scale-95 sm:ml-2">
+                                Filtrar 🔍
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex gap-2 bg-gray-800 p-2 rounded-2xl border border-gray-700">
-                        <input type="date" id="data-inicio" class="bg-transparent text-xs p-2 outline-none border-r border-gray-700">
-                        <input type="date" id="data-fim" class="bg-transparent text-xs p-2 outline-none">
-                        <button onclick="loadDashboardData()" class="bg-green-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-700 transition">Filtrar</button>
-                    </div>
-                </div>
 
-                <!-- CARDS PRINCIPAIS -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
-                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Vendas no Período</p>
-                        <h3 id="vendas-total" class="text-3xl font-bold mt-2 font-mono">R$ 0,00</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gray-900/40 p-5 rounded-3xl border border-gray-800/80 shadow-lg">
+                            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest">Faturamento Período</p>
+                            <h3 id="vendas-total" class="text-2xl sm:text-3xl font-black mt-1 font-mono text-white">R$ 0,00</h3>
+                        </div>
+                        <div class="bg-gray-900/40 p-5 rounded-3xl border border-gray-800/80 shadow-lg">
+                            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest">Patrimônio (Custo)</p>
+                            <h3 id="custo-estoque" class="text-2xl sm:text-3xl font-black mt-1 text-blue-400 font-mono">R$ 0,00</h3>
+                        </div>
+                        <div class="bg-gray-900/40 p-5 rounded-3xl border border-gray-800/80 shadow-lg">
+                            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest">Estoque Disponível</p>
+                            <h3 id="qtd-estoque" class="text-2xl sm:text-3xl font-black mt-1 text-green-400 font-mono">0 un</h3>
+                        </div>
+                        <div class="bg-gray-900/40 p-5 rounded-3xl border border-gray-800/80 shadow-lg">
+                            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest">Lojistas Cadastrados</p>
+                            <h3 id="clientes-total" class="text-2xl sm:text-3xl font-black mt-1 text-purple-400 font-mono">0</h3>
+                        </div>
                     </div>
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
-                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Patrimônio (Custo)</p>
-                        <h3 id="custo-estoque" class="text-3xl font-bold mt-2 text-blue-400 font-mono">R$ 0,00</h3>
-                    </div>
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
-                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Estoque (Qtd Total)</p>
-                        <h3 id="qtd-estoque" class="text-3xl font-bold mt-2 text-green-400 font-mono">0 un</h3>
-                    </div>
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700">
-                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Clientes Ativos</p>
-                        <h3 id="clientes-total" class="text-3xl font-bold mt-2 text-white font-mono">0</h3>
-                    </div>
-                </div>
 
-                <!-- GRÁFICO DE VENDAS -->
-                <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 mb-8 shadow-2xl">
-                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Tendência de Faturamento</h4>
-                    <div class="h-64 w-full">
-                        <canvas id="chartVendas"></canvas>
+                    <div class="bg-gray-900/30 p-4 sm:p-6 rounded-[32px] border border-gray-800/60 shadow-2xl">
+                        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">📈 Tendência de Faturamento</h4>
+                        <div class="h-56 sm:h-64 w-full relative">
+                            <canvas id="chartVendas"></canvas>
+                        </div>
                     </div>
-                </div>
 
-                <!-- EXTRATO DE VENDAS (RODAPÉ) -->
-                <div class="bg-gray-800/20 rounded-3xl border border-gray-800 overflow-hidden">
-                    <div class="p-6 border-b border-gray-800 flex justify-between items-center">
-                        <h4 class="text-sm font-bold uppercase tracking-widest">Extrato de Movimentação</h4>
-                        <span class="text-[10px] bg-green-500/10 text-green-500 px-3 py-1 rounded-full font-bold">LIVE</span>
+                    <div class="bg-gray-900/20 rounded-[32px] border border-gray-800 overflow-hidden shadow-xl">
+                        <div class="p-5 border-b border-gray-900 bg-black/20 flex justify-between items-center">
+                            <h4 class="text-xs font-black uppercase tracking-widest">📋 Últimas Vendas Balcão</h4>
+                            <span class="text-[9px] bg-green-500/10 text-green-400 px-3 py-1 rounded-full font-black tracking-widest animate-pulse">LIVE</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-black/30 text-gray-500 text-[10px] uppercase tracking-wider font-bold">
+                                    <tr>
+                                        <th class="p-4">Data</th>
+                                        <th class="p-4">Cliente / Loja</th>
+                                        <th class="p-4 text-right">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-extrato" class="divide-y divide-gray-900/60 text-sm">
+                                    <tr>
+                                        <td colspan="3" class="p-8 text-center text-gray-500 uppercase tracking-widest text-xs font-bold animate-pulse">
+                                            Buscando movimentações...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <table class="w-full text-left">
-                        <thead class="bg-black/20 text-gray-500 text-[10px] uppercase">
-                            <tr>
-                                <th class="p-5">Data / Hora</th>
-                                <th class="p-5">Cliente</th>
-                                <th class="p-5 text-right">Valor</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-extrato" class="divide-y divide-gray-800/50">
-                            <!-- Inserido via JS -->
-                        </tbody>
-                    </table>
-                </div>
 
+                </div>
             </main>
         </div>
     </div>
@@ -92,22 +110,31 @@
         let chartInstance = null;
 
         async function loadUI() {
-            const [sb, hd] = await Promise.all([
-                fetch('../sidebar.html').then(r => r.text()),
-                fetch('../header.html').then(r => r.text())
-            ]);
-            document.getElementById('sidebar-container').innerHTML = sb;
-            document.getElementById('header-container').innerHTML = hd;
-            document.getElementById('page-title').innerText = "Painel de Controle Principal";
-            
-            loadDashboardData();
+            try {
+                const [sb, hd] = await Promise.all([
+                    fetch('../sidebar.html').then(r => r.text()),
+                    fetch('../header.html').then(r => r.text())
+                ]);
+                document.getElementById('sidebar-container').innerHTML = sb;
+                document.getElementById('header-container').innerHTML = hd;
+
+                // Ativa a lógica do menu hambúrguer responsivo
+                const scripts = document.getElementById('sidebar-container').getElementsByTagName('script');
+                for (let script of scripts) { eval(script.text); }
+
+                document.getElementById('page-title').innerText = "Dashboard Mestre";
+                
+                await loadDashboardData();
+            } catch (err) {
+                console.error("Erro na injeção dos templates:", err);
+            }
         }
 
         async function loadDashboardData() {
             const dataInicio = document.getElementById('data-inicio').value;
             const dataFim = document.getElementById('data-fim').value;
 
-            // 1. Dados de Estoque (Custo e Qtd)
+            // 1. Dados de Estoque
             const { data: produtos } = await supabase.from('produtos').select('estoque_atual, preco_custo');
             if (produtos) {
                 const totalQtd = produtos.reduce((acc, p) => acc + (p.estoque_atual || 0), 0);
@@ -120,11 +147,11 @@
             const { count } = await supabase.from('clientes').select('*', { count: 'exact', head: true });
             document.getElementById('clientes-total').innerText = count || 0;
 
-            // 3. Vendas e Gráfico
+            // 3. Vendas e Filtros por Data
             let queryVendas = supabase.from('vendas').select('*, clientes(nome_loja)').order('data_venda', { ascending: true });
             
-            if (dataInicio) queryVendas = queryVendas.gte('data_venda', dataInicio);
-            if (dataFim) queryVendas = queryVendas.lte('data_venda', dataFim);
+            if (dataInicio) queryVendas = queryVendas.gte('data_venda', dataInicio + 'T00:00:00');
+            if (dataFim) queryVendas = queryVendas.lte('data_venda', dataFim + 'T23:59:59');
 
             const { data: vendas } = await queryVendas;
 
@@ -139,21 +166,26 @@
 
         function renderExtrato(vendas) {
             const tbody = document.getElementById('lista-extrato');
-            const ultimas = [...vendas].reverse().slice(0, 5); // Pega as 5 últimas
+            if (!vendas || vendas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-500 uppercase tracking-widest text-xs">Sem vendas encontradas.</td></tr>`;
+                return;
+            }
+            const ultimas = [...vendas].reverse().slice(0, 5);
             
             tbody.innerHTML = ultimas.map(v => `
-                <tr class="text-sm hover:bg-white/5 transition">
-                    <td class="p-5 text-gray-500">${new Date(v.data_venda).toLocaleDateString()}</td>
-                    <td class="p-5 font-bold">${v.clientes?.nome_loja || 'Cliente Direto'}</td>
-                    <td class="p-5 text-right font-mono text-green-400">R$ ${v.valor_total.toFixed(2)}</td>
+                <tr class="text-sm hover:bg-gray-900/30 transition-all border-b border-gray-900/40">
+                    <td class="p-4 text-gray-500 font-mono">${new Date(v.data_venda).toLocaleDateString()}</td>
+                    <td class="p-4 font-bold text-white">${v.clientes?.nome_loja || 'Cliente Balcão'}</td>
+                    <td class="p-4 text-right font-mono font-bold text-green-400">R$ ${v.valor_total.toFixed(2)}</td>
                 </tr>
             `).join('');
         }
 
         function renderChart(vendas) {
-            const ctx = document.getElementById('chartVendas').getContext('2d');
+            const canvas = document.getElementById('chartVendas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             
-            // Agrupar vendas por dia
             const labels = [...new Set(vendas.map(v => new Date(v.data_venda).toLocaleDateString()))];
             const dataValues = labels.map(label => {
                 return vendas
@@ -171,11 +203,11 @@
                         label: 'Vendas (R$)',
                         data: dataValues,
                         borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.05)',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0.3,
                         borderWidth: 3,
-                        pointRadius: 4,
+                        pointRadius: 3,
                         pointBackgroundColor: '#22c55e'
                     }]
                 },
@@ -184,13 +216,14 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } },
-                        x: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+                        y: { grid: { color: '#111827' }, ticks: { color: '#6b7280', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 } } }
                     }
                 }
             });
         }
 
+        window.loadDashboardData = loadDashboardData;
         loadUI();
     </script>
 </body>

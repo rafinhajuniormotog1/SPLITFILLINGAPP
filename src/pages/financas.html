@@ -8,67 +8,89 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .main-content { height: calc(100vh - 80px); }
+        
+        /* Ajuste de altura responsiva para rolagem de tela */
+        .main-content { height: calc(100vh - 75px); }
+        @media (min-width: 1024px) { .main-content { height: calc(100vh - 80px); } }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans overflow-hidden">
-    <div class="flex h-screen w-screen">
-        <div id="sidebar-container"></div>
+<body class="bg-gray-950 text-white font-sans overflow-hidden">
+    
+    <div class="flex h-screen w-screen overflow-hidden">
+        <div id="sidebar-container" class="no-print"></div>
 
-        <div class="flex flex-col flex-1 overflow-hidden">
-            <div id="header-container"></div>
+        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <div id="header-container" class="no-print"></div>
 
-            <main class="main-content overflow-y-auto p-10 bg-black/30 no-scrollbar">
+            <main class="main-content overflow-y-auto p-4 sm:p-6 md:p-8 bg-black/20 no-scrollbar pt-[95px] lg:pt-[105px]">
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
-                    <div class="space-y-6">
-                        <h3 class="text-2xl font-bold text-red-500 italic">Registrar Saída 💸</h3>
-                        <div class="bg-gray-800/40 p-8 rounded-3xl border border-gray-700 shadow-2xl">
-                            <form id="formDespesa" class="space-y-4">
-                                <input type="text" id="desc-despesa" placeholder="Descrição (Ex: Combustível, Aluguel)" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 outline-none focus:border-red-500 transition" required>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <input type="number" step="0.01" id="valor-despesa" placeholder="Valor R$" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 outline-none focus:border-red-500 transition" required>
-                                    <select id="cat-despesa" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 outline-none">
-                                        <option value="Compra de Mercadoria">Compra de Mercadoria</option>
-                                        <option value="Embalagem">Embalagem</option>
-                                        <option value="Logística/Gasolina">Logística / Gasolina</option>
-                                        <option value="Marketing">Marketing</option>
-                                        <option value="Infraestrutura">Infraestrutura</option>
-                                        <option value="Outros">Outros</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="w-full bg-red-600 p-4 rounded-xl font-bold hover:bg-red-700 transition uppercase tracking-widest shadow-lg shadow-red-900/20">Salvar Despesa</button>
-                            </form>
+                <div class="max-w-6xl mx-auto space-y-8">
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-black text-red-500 italic uppercase tracking-tight">Registrar Saída 💸</h3>
+                            <div class="bg-gray-900/50 p-5 sm:p-8 rounded-[32px] border border-gray-800 shadow-2xl backdrop-blur-xl">
+                                <form id="formDespesa" class="space-y-4">
+                                    <div>
+                                        <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Descrição do Custo</label>
+                                        <input type="text" id="desc-despesa" placeholder="Ex: Gasolina Fiorino, Embalagens" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-red-500 transition text-sm text-white" required>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Valor Gasto</label>
+                                            <input type="number" step="0.01" id="valor-despesa" placeholder="R$ 0,00" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-red-500 transition text-sm text-white font-mono" required>
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Categoria</label>
+                                            <select id="cat-despesa" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none text-sm text-white focus:border-red-500">
+                                                <option value="Compra de Mercadoria">Compra de Mercadoria</option>
+                                                <option value="Embalagem">Embalagem</option>
+                                                <option value="Logística/Gasolina">Logística / Gasolina</option>
+                                                <option value="Marketing">Marketing</option>
+                                                <option value="Infraestrutura">Infraestrutura</option>
+                                                <option value="Outros">Outros</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-black p-4 rounded-xl text-xs uppercase tracking-widest transition active:scale-95 shadow-lg shadow-red-950/20">
+                                        Gravar Despesa no Banco ➔
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-black text-blue-400 italic uppercase tracking-tight">Contas a Receber (Prazo) ⏳</h3>
+                            <div id="lista-pendentes" class="space-y-3 max-h-[310px] overflow-y-auto pr-1 no-scrollbar">
+                                <div class="bg-gray-900/30 border border-gray-800 p-6 rounded-2xl text-center text-gray-500 uppercase tracking-widest text-xs font-bold animate-pulse">Buscando pendências no sistema...</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-black text-green-500 italic uppercase tracking-tight">Últimas Movimentações 📊</h3>
+                        <div class="bg-gray-900/20 rounded-[32px] border border-gray-800 overflow-hidden shadow-2xl">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-black/40 text-gray-400 text-[10px] uppercase tracking-widest font-bold border-b border-gray-900">
+                                        <tr>
+                                            <th class="p-4">Data</th>
+                                            <th class="p-4">Fluxo</th>
+                                            <th class="p-4">Descrição / Cliente</th>
+                                            <th class="p-4 text-right">Valor</th>
+                                            <th class="p-4 text-center">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lista-movimentacoes" class="divide-y divide-gray-900/50 text-sm">
+                                        </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="space-y-6">
-                        <h3 class="text-2xl font-bold text-blue-400 italic">Contas a Receber (Prazo) ⏳</h3>
-                        <div id="lista-pendentes" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
-                            <p class="text-gray-500 italic">Buscando dívidas no sistema...</p>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-2xl font-bold text-green-500 italic">Últimas Movimentações 📊</h3>
-                    <div class="bg-gray-800/40 rounded-3xl border border-gray-700 overflow-hidden shadow-2xl">
-                        <table class="w-full text-left">
-                            <thead class="bg-black/40 text-gray-400 text-xs uppercase tracking-widest">
-                                <tr>
-                                    <th class="p-5 font-bold">Data</th>
-                                    <th class="p-5 font-bold">Tipo</th>
-                                    <th class="p-5 font-bold">Descrição / Cliente</th>
-                                    <th class="p-5 font-bold text-right">Valor</th>
-                                    <th class="p-5 font-bold text-center">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="lista-movimentacoes" class="divide-y divide-gray-800">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </main>
         </div>
     </div>
@@ -77,20 +99,28 @@
         import { supabase } from '../supabaseClient.js';
 
         async function init() {
-            // Carregar componentes globais [cite: 570]
-            const [sb, hd] = await Promise.all([
-                fetch('../sidebar.html').then(r => r.text()),
-                fetch('../header.html').then(r => r.text())
-            ]);
-            document.getElementById('sidebar-container').innerHTML = sb;
-            document.getElementById('header-container').innerHTML = hd;
-            document.getElementById('page-title').innerText = "Fluxo de Caixa";
-            
-            loadPendentes();
-            loadMovimentacoes();
+            try {
+                // Carrega o menu lateral e o cabeçalho globais de forma assíncrona
+                const [sb, hd] = await Promise.all([
+                    fetch('../sidebar.html').then(r => r.text()),
+                    fetch('../header.html').then(r => r.text())
+                ]);
+                document.getElementById('sidebar-container').innerHTML = sb;
+                document.getElementById('header-container').innerHTML = hd;
+
+                // Força a execução do script touch do menu lateral [cite: 1951]
+                const scripts = document.getElementById('sidebar-container').getElementsByTagName('script');
+                for (let script of scripts) { eval(script.text); }
+
+                document.getElementById('page-title').innerText = "Gestão de Fluxo / Finanças";
+                
+                await Promise.all([loadPendentes(), loadMovimentacoes()]);
+            } catch (e) {
+                console.error("Erro ao montar layout financeiro:", e);
+            }
         }
 
-        // Carregar vendas com status pendente (Contas a Receber) [cite: 513]
+        // Buscar vendas com status consignado/pendente [cite: 1918]
         async function loadPendentes() {
             const { data, error } = await supabase
                 .from('vendas')
@@ -100,25 +130,25 @@
 
             const container = document.getElementById('lista-pendentes');
             if (error || !data || data.length === 0) {
-                container.innerHTML = "<p class='text-gray-500 text-sm'>Nenhum pagamento pendente encontrado.</p>";
+                container.innerHTML = "<div class='bg-gray-900/30 border border-gray-800 p-6 rounded-2xl text-center text-gray-500 uppercase tracking-widest text-xs'>Nenhum pagamento pendente encontrado.</div>";
                 return;
             }
 
             container.innerHTML = data.map(v => `
-                <div class="bg-blue-900/10 border border-blue-500/20 p-5 rounded-2xl flex justify-between items-center group hover:border-blue-500/50 transition">
+                <div class="bg-blue-950/10 border border-blue-500/10 p-4 rounded-2xl flex justify-between items-center group hover:border-blue-500/30 transition-all">
                     <div>
-                        <p class="font-bold text-white text-lg">${v.clientes?.nome_loja || "Venda Direta"}</p>
-                        <p class="text-[10px] text-blue-400 uppercase font-bold tracking-widest">Vence em: ${new Date(v.data_vencimento).toLocaleDateString()}</p>
+                        <p class="font-bold text-white text-base">${v.clientes?.nome_loja || "Venda Direta Corrente"}</p>
+                        <p class="text-[9px] text-blue-400 uppercase font-black tracking-widest mt-0.5">Vence: ${new Date(v.data_vencimento).toLocaleDateString('pt-BR')}</p>
                     </div>
-                    <div class="text-right">
-                        <p class="font-mono font-bold text-white text-xl">R$ ${v.valor_total.toFixed(2)}</p>
-                        <button onclick="baixarVenda('${v.id}')" class="text-[10px] bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded-full font-black mt-2 transition">RECEBER AGORA</button>
+                    <div class="text-right flex flex-col items-end">
+                        <p class="font-mono font-bold text-white text-base">R$ ${v.valor_total.toFixed(2)}</p>
+                        <button onclick="window.baixarVenda('${v.id}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-xl font-black uppercase tracking-widest mt-1.5 transition active:scale-95">Receber Agora</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Carregar movimentações (Entradas de Vendas + Saídas de Despesas) [cite: 594]
+        // Carrega Entradas (Vendas) e Saídas (Despesas) combinadas no Histórico [cite: 1924]
         async function loadMovimentacoes() {
             const [{ data: vendas }, { data: despesas }] = await Promise.all([
                 supabase.from('vendas').select('*, clientes(nome_loja)').eq('status', 'pago').order('data_venda', { ascending: false }).limit(15),
@@ -126,80 +156,116 @@
             ]);
 
             const movimentacoes = [
-                ...(vendas || []).map(v => ({ id: v.id, data: v.data_venda, tipo: 'entrada', desc: v.clientes?.nome_loja || "Venda Balcão", valor: v.valor_total, editavel: false })),
+                ...(vendas || []).map(v => ({ id: v.id, data: v.data_venda, tipo: 'entrada', desc: v.clientes?.nome_loja || "Venda Balcão", valor: v.valor_total, editavel: true })),
                 ...(despesas || []).map(d => ({ id: d.id, data: d.data_saida, tipo: 'saida', desc: d.descricao, valor: d.valor, editavel: true }))
             ];
 
-            // Ordenar por data (mais recente primeiro) [cite: 596]
+            // Ordena união das listas por data decrescente [cite: 1926]
             movimentacoes.sort((a, b) => new Date(b.data) - new Date(a.data));
 
             const tbody = document.getElementById('lista-movimentacoes');
             if (movimentacoes.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' class='p-5 text-center text-gray-500'>Sem movimentações registradas.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='5' class='p-8 text-center text-gray-500 uppercase tracking-widest text-xs'>Sem movimentações registradas.</td></tr>";
                 return;
             }
 
             tbody.innerHTML = movimentacoes.slice(0, 20).map(m => `
-                <tr id="row-${m.id}" class="hover:bg-white/5 transition border-l-4 ${m.tipo === 'entrada' ? 'border-green-500' : 'border-red-500'}">
-                    <td class="p-5 text-sm text-gray-400 font-mono">${new Date(m.data).toLocaleDateString()}</td>
-                    <td class="p-5">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${m.tipo === 'entrada' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}">
+                <tr id="row-${m.id}" class="hover:bg-gray-900/30 transition-all border-b border-gray-900/40 border-l-4 ${m.tipo === 'entrada' ? 'border-green-500 bg-green-950/5' : 'border-red-500 bg-red-950/5'}">
+                    <td class="p-4 text-xs text-gray-500 font-mono">${new Date(m.data).toLocaleDateString('pt-BR')}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${m.tipo === 'entrada' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}">
                             ${m.tipo}
                         </span>
                     </td>
-                    <td class="p-5 font-bold text-gray-200" id="desc-container-${m.id}">
+                    <td class="p-4 font-bold text-gray-200" id="desc-container-${m.id}">
                         ${m.desc}
                     </td>
-                    <td class="p-5 text-right font-mono font-bold text-lg ${m.tipo === 'entrada' ? 'text-green-500' : 'text-red-500'}" id="valor-container-${m.id}">
+                    <td class="p-4 text-right font-mono font-bold text-base ${m.tipo === 'entrada' ? 'text-green-400' : 'text-red-400'}" id="valor-container-${m.id}">
                         ${m.tipo === 'entrada' ? '+' : '-'} R$ ${m.valor.toFixed(2)}
                     </td>
-                    <td class="p-5 text-center">
-                        ${m.editavel ? `
-                            <button id="btn-edit-${m.id}" onclick="habilitarEdicao('${m.id}', '${m.desc}', ${m.valor}, '${m.tipo}')" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-lg transition font-bold">Editar</button>
-                        ` : `<span class="text-xs text-gray-600 italic">Venda (Fixa)</span>`}
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-2" id="action-container-${m.id}">
+                            <button onclick="window.habilitarEdicao('${m.id}', '${m.desc}', ${m.valor}, '${m.tipo}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded-lg transition font-black uppercase tracking-wider">Editar</button>
+                            <button onclick="window.excluirMovimentacao('${m.id}', '${m.tipo}')" class="text-[10px] bg-red-950/40 border border-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1 rounded-lg transition font-black uppercase tracking-wider">Remover</button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // Nova função para injetar inputs e permitir a edição direta na tabela
+        // Transforma os campos de texto comuns da tabela em inputs em tempo real [cite: 1932]
         window.habilitarEdicao = (id, descAtual, valorAtual, tipo) => {
             const descTd = document.getElementById(`desc-container-${id}`);
             const valorTd = document.getElementById(`valor-container-${id}`);
-            const btnCell = document.getElementById(`btn-edit-${id}`);
+            const actionDiv = document.getElementById(`action-container-${id}`);
 
-            // Transforma os textos em inputs com estilo escuro do app
-            descTd.innerHTML = `<input type="text" id="input-edit-desc-${id}" value="${descAtual}" class="bg-gray-900 border border-gray-700 p-2 rounded-lg text-sm w-full outline-none focus:border-blue-500 text-white">`;
-            valorTd.innerHTML = `<input type="number" step="0.01" id="input-edit-valor-${id}" value="${valorAtual}" class="bg-gray-900 border border-gray-700 p-2 rounded-lg text-sm w-28 text-right outline-none focus:border-blue-500 text-white">`;
+            // Se for entrada (venda), bloqueia o campo do texto para não corromper o vínculo com a tabela de clientes
+            if (tipo === 'entrada') {
+                descTd.innerHTML = `<span class="text-gray-400 text-xs italic bg-black/40 px-2 py-1 rounded-lg">${descAtual} (Fixo)</span>`;
+            } else {
+                descTd.innerHTML = `<input type="text" id="input-edit-desc-${id}" value="${descAtual}" class="bg-black border border-gray-800 p-2 rounded-xl text-xs w-full outline-none focus:border-blue-500 text-white font-bold">`;
+            }
+            
+            valorTd.innerHTML = `<input type="number" step="0.01" id="input-edit-valor-${id}" value="${valorAtual}" class="bg-black border border-gray-800 p-2 rounded-xl text-xs w-24 text-right outline-none focus:border-blue-500 text-white font-mono font-bold">`;
 
-            // Transforma o botão de Editar em Salvar
-            btnCell.outerHTML = `<button id="btn-edit-${id}" onclick="salvarEdicao('${id}', '${tipo}')" class="text-xs bg-green-600 hover:bg-green-500 px-3 py-1 rounded-lg transition font-bold text-black">Salvar</button>`;
+            // Transforma os botões da linha no botão único de "Salvar" [cite: 1935]
+            actionDiv.innerHTML = `<button onclick="window.salvarEdicao('${id}', '${tipo}', '${descAtual}')" class="text-[10px] bg-green-600 hover:bg-green-500 text-black px-4 py-1 rounded-lg transition font-black uppercase tracking-wider">Salvar</button>`;
         };
 
-        // Salvar a alteração direto no Supabase
-        window.salvarEdicao = async (id, tipo) => {
-            const novaDesc = document.getElementById(`input-edit-desc-${id}`).value;
+        // Aplica o UPDATE cirúrgico na linha editada no Supabase (Despesas ou Vendas) [cite: 1936]
+        window.salvarEdicao = async (id, tipo, descOriginal) => {
             const novoValor = parseFloat(document.getElementById(`input-edit-valor-${id}`).value);
+            let novaDesc = descOriginal;
+
+            if (tipo === 'saida') {
+                novaDesc = document.getElementById(`input-edit-desc-${id}`).value;
+            }
 
             if (!novaDesc || isNaN(novoValor) || novoValor <= 0) {
-                alert("Por favor, preencha os campos com valores válidos!");
+                alert("Por favor, insira valores válidos para atualizar o registro!");
                 return;
             }
 
-            // Atualiza a tabela 'despesas' na nuvem
-            const { error } = await supabase
-                .from('despesas')
-                .update({ descricao: novaDesc, valor: novoValor })
-                .eq('id', id);
-
-            if (error) {
-                alert("Erro ao salvar alteração: " + error.message);
+            let resposta;
+            if (tipo === 'saida') {
+                // Atualiza a tabela despesas [cite: 1939]
+                resposta = await supabase.from('despesas').update({ descricao: novaDesc, valor: novoValor }).eq('id', id);
             } else {
-                loadMovimentacoes(); // Recarrega a tabela limpa e editada
+                // Atualiza o valor direto na tabela vendas [cite: 1939]
+                resposta = await supabase.from('vendas').update({ valor_total: novoValor }).eq('id', id);
+            }
+
+            if (resposta.error) {
+                alert("Erro ao salvar alteração: " + resposta.error.message);
+            } else {
+                await loadMovimentacoes();
             }
         };
 
-        // Gravar nova Despesa [cite: 512]
+        // FUNÇÃO ATUALIZADA: Deleta o registro (Despesa ou Venda) diretamente da nuvem [cite: 1948]
+        window.excluirMovimentacao = async (id, tipo) => {
+            const mensagem = tipo === 'entrada' 
+                ? "Tem certeza que deseja apagar permanentemente esta VENDA do sistema? (Isso alterará os relatórios e faturamento)" 
+                : "Tem certeza que deseja apagar permanentemente esta despesa do histórico financeiro?";
+
+            if (confirm(mensagem)) {
+                // Define qual tabela atacar baseado no tipo da linha [cite: 1925]
+                const tabelaAlvo = tipo === 'entrada' ? 'vendas' : 'despesas';
+                
+                const { error } = await supabase
+                    .from(tabelaAlvo)
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
+                    alert("Erro ao remover registro: " + error.message);
+                } else {
+                    await loadMovimentacoes();
+                }
+            }
+        };
+
+        // Gravar nova Despesa [cite: 1943]
         document.getElementById('formDespesa').onsubmit = async (e) => {
             e.preventDefault();
             const desc = document.getElementById('desc-despesa').value;
@@ -213,14 +279,14 @@
             }]);
 
             if (error) {
-                alert("Erro ao salvar: " + error.message);
+                alert("Erro ao salvar despesa: " + error.message);
             } else {
                 e.target.reset();
-                loadMovimentacoes();
+                await loadMovimentacoes();
             }
         };
 
-        // Função global para dar baixa em venda pendente [cite: 514]
+        // Baixar faturas pendentes da rua para o caixa [cite: 1947]
         window.baixarVenda = async (id) => {
             const { error } = await supabase
                 .from('vendas')
@@ -228,8 +294,9 @@
                 .eq('id', id);
 
             if (!error) {
-                loadPendentes();
-                loadMovimentacoes();
+                await Promise.all([loadPendentes(), loadMovimentacoes()]);
+            } else {
+                alert("Erro ao atualizar status: " + error.message);
             }
         };
 

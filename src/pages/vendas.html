@@ -2,121 +2,123 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Splitfilling - PDV Profissional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .main-content { height: calc(100vh - 80px); }
+        .main-content { height: calc(100vh - 75px); }
+        @media (min-width: 1024px) { .main-content { height: calc(100vh - 80px); } }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans overflow-hidden">
+<body class="bg-gray-950 text-white font-sans overflow-hidden">
     
-    <div class="flex h-screen w-screen">
-        <div id="sidebar-container"></div>
+    <div class="flex h-screen w-screen overflow-hidden">
+        <div id="sidebar-container" class="no-print"></div>
 
-        <div class="flex flex-col flex-1 overflow-hidden">
-            <div id="header-container"></div>
+        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <div id="header-container" class="no-print"></div>
 
-            <main class="main-content overflow-y-auto p-10 bg-black/30 no-scrollbar">
+            <main class="main-content overflow-y-auto p-4 sm:p-6 md:p-8 bg-black/20 no-scrollbar pt-[95px] lg:pt-[105px]">
                 
-                <div id="setup-venda" class="flex flex-col items-center justify-center h-full">
-                    <div class="bg-gray-800 p-10 rounded-3xl border border-gray-700 shadow-2xl w-full max-w-lg">
+                <div id="setup-venda" class="flex flex-col items-center justify-center min-h-[70vh]">
+                    <div class="bg-gray-900/50 p-6 sm:p-10 rounded-[32px] border border-gray-800 shadow-2xl w-full max-w-lg backdrop-blur-xl">
                         <div class="text-center">
-                            <div class="text-5xl mb-6 text-green-500">🛒</div>
-                            <h2 class="text-2xl font-bold mb-2">Novo Atendimento</h2>
-                            <p class="text-gray-400 mb-8">Configure os detalhes da operação</p>
+                            <div class="text-5xl mb-4 text-green-500 select-none">🛒</div>
+                            <h2 class="text-2xl font-black uppercase tracking-tight italic">Novo Atendimento</h2>
+                            <p class="text-gray-500 text-xs uppercase tracking-wider mt-1">Configure os detalhes da operação de rua</p>
                         </div>
                         
-                        <div class="space-y-4">
+                        <div class="space-y-4 mt-8">
                             <div>
-                                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Selecione o Cliente</label>
-                                <select id="select-cliente" class="w-full bg-gray-900 p-4 rounded-2xl border border-gray-700 focus:border-green-500 outline-none text-white mt-1">
+                                <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Selecione o Cliente / Lojista</label>
+                                <select id="select-cliente" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm transition-all">
                                     <option value="">Carregando clientes...</option>
                                 </select>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Status de Pagamento</label>
-                                    <select id="status-pagamento" onchange="toggleVencimento()" class="w-full bg-gray-900 p-4 rounded-2xl border border-gray-700 focus:border-green-500 outline-none text-white mt-1">
+                                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Fluxo do Caixa</label>
+                                    <select id="status-pagamento" onchange="window.toggleVencimento()" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm transition-all">
                                         <option value="pago">Já Pago (À Vista)</option>
                                         <option value="pendente">Consignado (A Prazo)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Data da Venda</label>
-                                    <input type="datetime-local" id="data-venda-input" class="w-full bg-gray-900 p-4 rounded-2xl border border-gray-700 focus:border-green-500 outline-none text-white mt-1">
+                                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Data do Lançamento</label>
+                                    <input type="datetime-local" id="data-venda-input" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none text-white mt-1 text-sm font-mono">
                                 </div>
                             </div>
 
-                            <div id="campo-vencimento" class="hidden">
-                                <label class="text-[10px] uppercase text-gray-500 font-bold ml-1 text-yellow-500">Data de Vencimento</label>
-                                <input type="date" id="data-vencimento-input" class="w-full bg-gray-900 p-4 rounded-2xl border border-yellow-500/50 focus:border-yellow-500 outline-none text-white mt-1">
+                            <div id="campo-vencimento" class="hidden transition-all">
+                                <label class="text-[10px] uppercase text-yellow-500 font-black ml-1">Vencimento Acordado</label>
+                                <input type="date" id="data-vencimento-input" class="w-full bg-black p-4 rounded-xl border border-yellow-600/40 focus:border-yellow-500 outline-none text-white mt-1 text-sm font-mono">
                             </div>
                         </div>
                         
-                        <button onclick="iniciarVenda()" class="w-full bg-green-600 hover:bg-green-700 p-5 rounded-2xl font-bold text-xl transition shadow-lg shadow-green-900/30 mt-8">
-                            Abrir Caixa 🚀
+                        <button onclick="window.iniciarVenda()" class="w-full bg-green-600 hover:bg-green-500 text-black font-black p-5 rounded-2xl text-xs uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-green-900/20 mt-8">
+                            Abrir Caixa Operacional 🚀
                         </button>
                     </div>
                 </div>
 
-                <div id="caixa-operacional" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                <div id="caixa-operacional" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                     
                     <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-gray-800/60 p-8 rounded-3xl border border-gray-700 shadow-xl">
-                            <div class="flex justify-between items-center mb-6">
+                        <div class="bg-gray-900/40 p-6 sm:p-8 rounded-[32px] border border-gray-800 shadow-xl">
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-gray-800 pb-4 mb-6">
                                 <div class="flex flex-col">
-                                    <h3 class="text-xl font-bold text-green-500 italic">Cliente: <span id="display-cliente" class="text-white not-italic"></span></h3>
-                                    <span id="display-info" class="text-[10px] text-gray-500 font-mono"></span>
+                                    <h3 class="text-xl font-black text-green-500 italic uppercase tracking-tight">Lojista: <span id="display-cliente" class="text-white not-italic ml-1"></span></h3>
+                                    <span id="display-info" class="text-[10px] text-gray-500 font-mono uppercase tracking-wider mt-1"></span>
                                 </div>
-                                <button onclick="location.reload()" class="text-xs text-red-500 hover:underline uppercase font-bold">Cancelar / Trocar</button>
+                                <button onclick="location.reload()" class="text-xs text-red-500 hover:text-red-400 uppercase font-black tracking-widest self-start sm:self-center">✕ Cancelar Operação</button>
                             </div>
                             
-                            <div class="grid grid-cols-12 gap-4">
-                                <div class="col-span-7">
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Produto</label>
-                                    <select id="select-produto" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white"></select>
+                            <div class="flex flex-col sm:flex-row gap-4 items-end">
+                                <div class="flex-1 w-full">
+                                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Escolha o Tabaco</label>
+                                    <select id="select-produto" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none mt-1 text-sm text-white"></select>
                                 </div>
-                                <div class="col-span-3">
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Qtd</label>
-                                    <input type="number" id="input-qtd" value="1" min="1" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1 text-white text-center">
+                                <div class="w-full sm:w-28">
+                                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1 text-center block sm:text-left">Quantia</label>
+                                    <input type="number" id="input-qtd" value="1" min="1" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none mt-1 text-sm text-white text-center font-bold">
                                 </div>
-                                <div class="col-span-2 flex items-end">
-                                    <button onclick="adicionarItem()" class="w-full bg-green-600 hover:bg-green-700 h-[58px] rounded-xl font-bold text-2xl transition">＋</button>
-                                </div>
+                                <button onclick="window.adicionarItem()" class="w-full sm:w-16 bg-green-600 hover:bg-green-500 text-black h-[54px] rounded-xl font-black text-xl transition active:scale-95">＋</button>
                             </div>
                         </div>
 
-                        <div class="bg-gray-800/40 rounded-3xl border border-gray-700 overflow-hidden min-h-[300px]">
-                            <table class="w-full text-left">
-                                <thead class="bg-black/40 text-gray-400 text-xs uppercase tracking-widest">
-                                    <tr>
-                                        <th class="p-5">Produto</th>
-                                        <th class="p-5 text-center">Qtd</th>
-                                        <th class="p-5 text-center">Subtotal</th>
-                                        <th class="p-5"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="carrinho" class="divide-y divide-gray-800"></tbody>
-                            </table>
+                        <div class="bg-gray-900/20 rounded-[32px] border border-gray-800 overflow-hidden shadow-2xl">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-black/30 text-gray-400 text-[10px] uppercase tracking-widest font-bold border-b border-gray-900">
+                                        <tr>
+                                            <th class="p-4 sm:p-5">Produto Cadastrado</th>
+                                            <th class="p-4 sm:p-5 text-center">Volume</th>
+                                            <th class="p-4 sm:p-5 text-center">Subtotal</th>
+                                            <th class="p-4 sm:p-5"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="carrinho" class="divide-y divide-gray-900/50 text-sm"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-6">
-                        <div class="bg-green-600 p-10 rounded-3xl shadow-xl shadow-green-900/20 text-center">
-                            <p class="text-green-100 text-xs font-bold uppercase tracking-widest">Total Geral</p>
-                            <h2 id="total-venda" class="text-6xl font-bold mt-2 font-mono">R$ 0,00</h2>
+                        <div class="bg-green-600 p-8 rounded-[32px] shadow-xl shadow-green-950/20 text-center select-none">
+                            <p class="text-black/60 text-[10px] font-black uppercase tracking-widest">Total Líquido da Nota</p>
+                            <h2 id="total-venda" class="text-4xl sm:text-5xl font-black mt-2 font-mono text-black">R$ 0,00</h2>
                         </div>
 
-                        <div class="bg-gray-800 p-8 rounded-3xl border border-gray-700 space-y-4">
-                            <button id="btn-finalizar" onclick="finalizarVenda()" class="w-full bg-white text-black p-6 rounded-2xl font-bold text-xl hover:bg-gray-200 transition">
-                                Salvar Venda 💰
+                        <div class="bg-gray-900/40 p-6 rounded-[32px] border border-gray-800 space-y-4 shadow-xl">
+                            <button id="btn-finalizar" onclick="window.finalizarVenda()" class="w-full bg-white hover:bg-gray-100 text-black p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition active:scale-95">
+                                Concluir e Gravar no Banco 💰
                             </button>
-                            <button id="btn-pdf" onclick="gerarPDF()" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-bold hidden hover:bg-blue-700 transition">
-                                🖨️ Imprimir PDF
+                            <button id="btn-pdf" onclick="window.gerarPDF()" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-5 rounded-2xl font-black text-xs uppercase tracking-widest hidden transition active:scale-95">
+                                🖨️ Descarregar Recibo PDF
                             </button>
                         </div>
                     </div>
@@ -137,18 +139,13 @@
         let statusPagamento = "pago";
         let dataVencimento = null;
 
-        // Mostrar/Ocultar campo de vencimento
         window.toggleVencimento = () => {
             const status = document.getElementById('status-pagamento').value;
             const campo = document.getElementById('campo-vencimento');
-            if (status === 'pendente') {
-                campo.classList.remove('hidden');
-            } else {
-                campo.classList.add('hidden');
-            }
+            campo.classList.toggle('hidden', status !== 'pendente');
         };
 
-        async function loadPage() {
+        async function inicializarPagina() {
             try {
                 const [sb, hd] = await Promise.all([
                     fetch('../sidebar.html').then(r => r.text()),
@@ -156,7 +153,11 @@
                 ]);
                 document.getElementById('sidebar-container').innerHTML = sb;
                 document.getElementById('header-container').innerHTML = hd;
-                document.getElementById('page-title').innerText = "Frente de Caixa";
+
+                const scripts = document.getElementById('sidebar-container').getElementsByTagName('script');
+                for (let script of scripts) { eval(script.text); }
+
+                document.getElementById('page-title').innerText = "Frente de Caixa (PDV)";
                 
                 const now = new Date();
                 now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -164,30 +165,26 @@
 
                 await carregarDadosIniciais();
             } catch (e) {
-                console.error("Erro ao carregar layout:", e);
+                console.error("Erro estrutural de inicialização:", e);
             }
         }
 
         async function carregarDadosIniciais() {
-            const { data: clientes, error: errCli } = await supabase.from('clientes').select('*');
-            if (errCli) {
-                console.error("Erro clientes:", errCli);
-                document.getElementById('select-cliente').innerHTML = `<option>Erro</option>`;
-            } else {
-                const selectCli = document.getElementById('select-cliente');
+            const { data: clientes } = await supabase.from('clientes').select('*');
+            const selectCli = document.getElementById('select-cliente');
+            if (clientes) {
                 selectCli.innerHTML = '<option value="">-- Escolha um Cliente --</option>';
                 clientes.forEach(c => {
-                    const nomeParaExibir = c.nome_loja || c.nome || "Cliente sem nome";
-                    selectCli.innerHTML += `<option value="${c.id}">${nomeParaExibir}</option>`;
+                    selectCli.innerHTML += `<option value="${c.id}">${c.nome_loja || c.nome}</option>`;
                 });
             }
 
-            const { data: produtos, error: errProd } = await supabase.from('produtos').select('*');
-            if (errProd) console.error("Erro produtos:", errProd);
-            else {
+            const { data: produtos } = await supabase.from('produtos').select('*');
+            if (produtos) {
                 todosProdutos = produtos;
-                const selectProd = document.getElementById('select-produto');
-                selectProd.innerHTML = produtos.map(p => `<option value="${p.id}">${p.nome} - R$ ${p.preco_venda.toFixed(2)}</option>`).join('');
+                document.getElementById('select-produto').innerHTML = produtos.map(p => 
+                    `<option value="${p.id}">${p.nome} (Disp: ${p.estoque_atual || 0} un) - R$ ${p.preco_venda.toFixed(2)}</option>`
+                ).join('');
             }
         }
 
@@ -206,36 +203,60 @@
             dataVencimento = document.getElementById('data-vencimento-input').value;
 
             document.getElementById('display-cliente').innerText = clienteFinalNome;
-            document.getElementById('display-info').innerText = `Data: ${new Date(dataVendaSelecionada).toLocaleString()} | Status: ${statusPagamento.toUpperCase()}`;
+            document.getElementById('display-info').innerText = `Data: ${new Date(dataVendaSelecionada).toLocaleString('pt-BR')} | Tipo: ${statusPagamento.toUpperCase()}`;
             
             document.getElementById('setup-venda').classList.add('hidden');
             document.getElementById('caixa-operacional').classList.remove('hidden');
+            renderCarrinho();
         };
 
         window.adicionarItem = () => {
             const id = document.getElementById('select-produto').value;
             const qtd = parseInt(document.getElementById('input-qtd').value);
+            if (!id || qtd < 1) return;
+
             const produto = todosProdutos.find(p => p.id === id);
+            
+            if (qtd > (produto.estoque_atual || 0)) {
+                return alert(`Quantidade indisponível! Você só tem ${produto.estoque_atual || 0} unidades deste item.`);
+            }
+
             const itemExistente = itensVenda.find(i => i.id === id);
-            if (itemExistente) itemExistente.qtd += qtd;
-            else itensVenda.push({ ...produto, qtd });
+            if (itemExistente) {
+                if ((itemExistente.qtd + qtd) > produto.estoque_atual) {
+                    return alert("A soma ultrapassa o limite em estoque!");
+                }
+                itemExistente.qtd += qtd;
+            } else {
+                itensVenda.push({ ...produto, qtd });
+            }
             renderCarrinho();
         };
 
         function renderCarrinho() {
             const tbody = document.getElementById('carrinho');
             let total = 0;
+            
+            if (itensVenda.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-500 uppercase tracking-widest text-xs font-bold">Mesa de vendas vazia.</td></tr>`;
+                document.getElementById('total-venda').innerText = "R$ 0,00";
+                return;
+            }
+
             tbody.innerHTML = itensVenda.map((item, index) => {
                 const sub = item.preco_venda * item.qtd;
                 total += sub;
                 return `
-                    <tr class="border-b border-gray-800">
-                        <td class="p-5 font-bold">${item.nome}</td>
-                        <td class="p-5 text-center text-green-400">${item.qtd}</td>
-                        <td class="p-5 text-center font-mono">R$ ${sub.toFixed(2)}</td>
-                        <td class="p-5 text-right"><button onclick="removerItem(${index})" class="text-red-500 hover:text-red-300">✕</button></td>
+                    <tr class="border-b border-gray-900/50 hover:bg-gray-900/20 transition-all">
+                        <td class="p-4 sm:p-5 font-bold text-white">${item.nome}</td>
+                        <td class="p-4 sm:p-5 text-center font-mono font-bold text-green-400">${item.qtd} un</td>
+                        <td class="p-4 sm:p-5 text-center font-mono">R$ ${sub.toFixed(2)}</td>
+                        <td class="p-4 sm:p-5 text-right">
+                            <button onclick="window.removerItem(${index})" class="text-red-500 hover:text-red-400 font-bold px-2 text-sm">✕</button>
+                        </td>
                     </tr>`;
             }).join('');
+            
             document.getElementById('total-venda').innerText = `R$ ${total.toFixed(2)}`;
         }
 
@@ -245,10 +266,11 @@
         };
 
         window.finalizarVenda = async () => {
-            if (itensVenda.length === 0) return alert("Carrinho vazio!");
+            if (itensVenda.length === 0) return alert("Adicione pelo menos um produto!");
             const total = parseFloat(document.getElementById('total-venda').innerText.replace('R$ ', ''));
             
-            const { error } = await supabase.from('vendas').insert([{
+            // 1. Grava a venda geral
+            const { error: errorVenda } = await supabase.from('vendas').insert([{
                 cliente_id: clienteFinalId,
                 valor_total: total,
                 data_venda: new Date(dataVendaSelecionada).toISOString(),
@@ -256,34 +278,55 @@
                 data_vencimento: statusPagamento === 'pendente' ? new Date(dataVencimento).toISOString() : null
             }]);
 
-            if (error) alert("Erro ao salvar: " + error.message);
-            else {
-                alert("Venda registrada com sucesso! " + (statusPagamento === 'pendente' ? "Ficou como pendente no sistema." : ""));
+            if (errorVenda) {
+                alert("Erro ao gravar relatório de venda: " + errorVenda.message);
+                return;
+            }
+
+            // 2. Atualiza o estoque_atual e salva o histórico exato por ID no localStorage para ser 100% à prova de falhas
+            try {
+                const agora = new Date();
+                const dataFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+                const promessasDeBaixa = itensVenda.map(item => {
+                    const novaQuantidade = (item.estoque_atual || 0) - item.qtd;
+                    
+                    // GRAVAÇÃO DO HISTÓRICO EXATO PARA A TELA DE ESTOQUE LER
+                    localStorage.setItem(`split_saida_data_${item.id}`, dataFormatada + ' (PDV)');
+                    localStorage.setItem(`split_saida_vol_${item.id}`, item.qtd);
+                    
+                    return supabase
+                        .from('produtos')
+                        .update({ estoque_atual: novaQuantidade })
+                        .eq('id', item.id);
+                });
+
+                await Promise.all(promessasDeBaixa);
+                
+                alert("Venda registrada e baixa realizada no histórico com sucesso! 🔥");
                 document.getElementById('btn-finalizar').classList.add('hidden');
                 document.getElementById('btn-pdf').classList.remove('hidden');
+            } catch (err) {
+                console.error("Erro ao atualizar o estoque:", err);
+                alert("A venda foi salva, mas ocorreu uma falha ao atualizar o estoque.");
             }
         };
 
         window.gerarPDF = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("RECIBO SPLITFILLING", 10, 10);
-            doc.text(`Cliente: ${clienteFinalNome}`, 10, 20);
-            doc.text(`Status: ${statusPagamento === 'pago' ? 'PAGO' : 'A PRAZO'}`, 10, 30);
-            if (statusPagamento === 'pendente') doc.text(`Vencimento: ${new Date(dataVencimento).toLocaleDateString()}`, 10, 40);
-            
-            let y = statusPagamento === 'pendente' ? 50 : 40;
-            doc.text("------------------------------------------", 10, y);
-            y += 10;
+            doc.text("RECIBO OFICIAL SPLITFILLING", 10, 10);
+            doc.text(`Parceiro: ${clienteFinalNome}`, 10, 20);
+            let y = 30;
             itensVenda.forEach(i => {
                 doc.text(`${i.nome} x${i.qtd} - R$ ${(i.preco_venda * i.qtd).toFixed(2)}`, 10, y);
                 y += 10;
             });
             doc.text(`TOTAL: ${document.getElementById('total-venda').innerText}`, 10, y + 10);
-            doc.save(`venda_splitfilling.pdf`);
+            doc.save(`recibo_${Date.now()}.pdf`);
         };
 
-        loadPage();
+        inicializarPagina();
     </script>
 </body>
 </html>

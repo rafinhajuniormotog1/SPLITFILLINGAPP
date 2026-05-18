@@ -2,113 +2,101 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Splitfilling - Gestão de Estoque & Custos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splitfilling - Controle de Estoque</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .main-content { height: calc(100vh - 80px); }
+        .main-content { height: calc(100vh - 75px); }
+        @media (min-width: 1024px) { .main-content { height: calc(100vh - 80px); } }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans overflow-hidden">
+<body class="bg-gray-950 text-white font-sans overflow-hidden">
     
-    <div class="flex h-screen w-screen">
-        <div id="sidebar-container"></div>
+    <div class="flex h-screen w-screen overflow-hidden">
+        <div id="sidebar-container" class="no-print"></div>
 
-        <div class="flex flex-col flex-1 overflow-hidden">
-            <div id="header-container"></div>
+        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <div id="header-container" class="no-print"></div>
 
-            <main class="main-content overflow-y-auto p-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black no-scrollbar">
-                
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h3 class="text-2xl font-bold text-green-500 italic">Inventário & Finanças</h3>
-                        <p class="text-sm text-gray-500">Controle de entradas, saídas e patrimônio em estoque.</p>
+            <main class="main-content overflow-y-auto p-4 sm:p-6 md:p-8 bg-black/20 no-scrollbar pt-[95px] lg:pt-[105px]">
+                <div class="max-w-6xl mx-auto space-y-6">
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-4">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-black text-green-500 italic uppercase tracking-tight">Controle de Estoque</h2>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">Gerenciamento de caixas, unidades e auditoria de fluxo real.</p>
+                        </div>
                     </div>
-                    <button onclick="abrirModal()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-green-900/20">
-                        + Novo Produto
-                    </button>
-                </div>
 
-                <!-- PAINEL DE RESUMO FINANCEIRO -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700 shadow-xl">
-                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Patrimônio (Custo Total)</p>
-                        <h3 id="resumo-custo-total" class="text-2xl font-bold mt-2 text-blue-400 font-mono">R$ 0,00</h3>
+                    <div class="bg-gray-900/20 rounded-[32px] border border-gray-800 overflow-hidden shadow-2xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-black/40 text-gray-400 text-[10px] uppercase tracking-widest font-bold border-b border-gray-900">
+                                    <tr>
+                                        <th class="p-4">Produto</th>
+                                        <th class="p-4">Código / Categoria</th>
+                                        <th class="p-4 text-center">Qtd Atual</th>
+                                        <th class="p-4 text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-estoque" class="divide-y divide-gray-900/50 text-sm">
+                                    </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700 shadow-xl">
-                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Potencial de Venda</p>
-                        <h3 id="resumo-venda-total" class="text-2xl font-bold mt-2 text-green-400 font-mono">R$ 0,00</h3>
-                    </div>
-                    <div class="bg-gray-800/60 p-6 rounded-3xl border border-gray-700 shadow-xl">
-                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Lucro Estimado (Bruto)</p>
-                        <h3 id="resumo-lucro-total" class="text-2xl font-bold mt-2 text-white font-mono">R$ 0,00</h3>
-                    </div>
-                </div>
 
-                <!-- Tabela de Gestão -->
-                <div class="bg-gray-800/40 backdrop-blur-md rounded-3xl border border-gray-700 overflow-hidden shadow-2xl">
-                    <table class="w-full text-left">
-                        <thead class="bg-black/40 text-gray-400 text-xs uppercase tracking-widest">
-                            <tr>
-                                <th class="p-6">Produto</th>
-                                <th class="p-6 text-center">Saldo</th>
-                                <th class="p-6 text-center">Custo Unit.</th>
-                                <th class="p-6 text-center">Venda Unit.</th>
-                                <th class="p-6 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listaProdutos" class="divide-y divide-gray-800 text-white">
-                            <tr><td colspan="5" class="p-20 text-center text-gray-500 italic">Buscando dados...</td></tr>
-                        </tbody>
-                    </table>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- MODAL DE CADASTRO / EDIÇÃO -->
-    <div id="modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
-        <div class="bg-gray-800 p-8 rounded-3xl border border-gray-700 w-full max-w-md shadow-2xl text-white">
-            <h3 id="modal-titulo" class="text-xl font-bold text-green-500 mb-6">Cadastrar Tabaco</h3>
-            <form id="formProduto" class="space-y-4">
-                <input type="hidden" id="produto-id">
-                
+    <div id="modal-editar" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-950 border border-gray-800 w-full max-w-xl rounded-[32px] p-6 space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <div class="flex justify-between items-center border-b border-gray-900 pb-3">
+                <h3 class="text-lg font-black text-green-500 uppercase tracking-tight">Editar Produto & Histórico</h3>
+                <button onclick="window.fecharModal()" class="text-gray-500 hover:text-white font-bold text-xl">&times;</button>
+            </div>
+            
+            <form id="form-editar-estoque" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-qtd-antiga">
                 <div>
-                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Nome do Produto</label>
-                    <input type="text" id="nome" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1" required>
+                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Nome do Produto</label>
+                    <input type="text" id="edit-nome" class="w-full bg-black p-3.5 rounded-xl border border-gray-800 outline-none focus:border-green-500 text-sm font-bold text-white mt-1" required>
                 </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Quantidade</label>
-                        <input type="number" id="estoque" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1" required>
-                    </div>
-                    <div>
-                        <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Custo Unitário (R$)</label>
-                        <input type="number" step="0.01" id="custo" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1" required>
-                    </div>
-                </div>
-
                 <div>
-                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Preço de Venda (R$)</label>
-                    <input type="number" step="0.01" id="preco" class="w-full bg-gray-900 p-4 rounded-xl border border-gray-700 focus:border-green-500 outline-none mt-1" required>
+                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Quantidade em Estoque (Unidades / Caixas)</label>
+                    <input type="number" id="edit-estoque-atual" class="w-full bg-black p-3.5 rounded-xl border border-gray-800 outline-none focus:border-green-500 text-sm font-mono font-bold text-white mt-1" required>
                 </div>
-
-                <div class="flex gap-3 pt-6">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-700 p-4 rounded-xl font-bold text-white">Cancelar</button>
-                    <button type="submit" id="btn-salvar" class="flex-1 bg-green-600 p-4 rounded-xl font-bold text-white">Salvar Produto 🚀</button>
-                </div>
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-black font-black p-3.5 rounded-xl text-xs uppercase tracking-widest transition active:scale-95">
+                    Salvar Mudanças no Banco 💾
+                </button>
             </form>
+
+            <div class="space-y-3 pt-2">
+                <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest">📋 Auditoria de Movimentações</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800/80">
+                        <p class="text-[9px] uppercase tracking-wider text-green-400 font-black">Última Entrada / Reposição</p>
+                        <p id="data-entrada-card" class="text-sm font-bold text-white mt-1 font-mono">--/--/----</p>
+                        <p id="volume-entrada-card" class="text-[11px] text-green-500 font-bold mt-0.5">Carga Inicial</p>
+                    </div>
+                    <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800/80">
+                        <p class="text-[9px] uppercase tracking-wider text-red-400 font-black">Última Saída / Baixa</p>
+                        <p id="data-saida-card" class="text-sm font-bold text-white mt-1 font-mono">--/--/----</p>
+                        <p id="volume-saida-card" class="text-[11px] text-red-500 font-bold mt-0.5">Nenhuma saída registrada.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from '../supabaseClient.js';
 
-        let editando = false;
-
-        async function loadUI() {
+        async function init() {
             try {
                 const [sb, hd] = await Promise.all([
                     fetch('../sidebar.html').then(r => r.text()),
@@ -116,96 +104,141 @@
                 ]);
                 document.getElementById('sidebar-container').innerHTML = sb;
                 document.getElementById('header-container').innerHTML = hd;
-                document.getElementById('page-title').innerText = "Gestão de Estoque e Custos";
-            } catch (e) { console.error("Erro UI:", e); }
+
+                const scripts = document.getElementById('sidebar-container').getElementsByTagName('script');
+                for (let script of scripts) { eval(script.text); }
+
+                document.getElementById('page-title').innerText = "Controle Geral de Estoque";
+                await carregarEstoque();
+            } catch (e) {
+                console.error("Erro na montagem da tela de estoque:", e);
+            }
         }
 
-        async function loadProducts() {
-            const tbody = document.getElementById('listaProdutos');
-            const { data, error } = await supabase.from('produtos').select('*').order('nome');
-            
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500">Erro: ${error.message}</td></tr>`;
+        async function carregarEstoque() {
+            const { data: produtos, error } = await supabase
+                .from('produtos')
+                .select('*')
+                .order('nome', { ascending: true });
+
+            const tbody = document.getElementById('lista-estoque');
+            if (error || !produtos || produtos.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-gray-500 uppercase tracking-widest text-xs'>Nenhum produto cadastrado no estoque.</td></tr>";
                 return;
             }
 
-            let custoTotalGlobal = 0;
-            let vendaTotalGlobal = 0;
-
-            tbody.innerHTML = data.length ? data.map(p => {
-                const custo = p.preco_custo || 0; // Certifique-se de que a coluna existe no banco
-                const saldo = p.estoque_atual || 0;
-                const venda = p.preco_venda || 0;
-
-                custoTotalGlobal += (custo * saldo);
-                vendaTotalGlobal += (venda * saldo);
-
+            tbody.innerHTML = produtos.map(p => {
+                const qtd = p.estoque_atual || 0;
                 return `
-                    <tr class="hover:bg-white/5 transition border-b border-gray-800/50 text-white">
-                        <td class="p-6 font-bold">${p.nome}</td>
-                        <td class="p-6 text-center font-bold ${saldo < 10 ? 'text-red-500' : 'text-white'}">${saldo} un</td>
-                        <td class="p-6 text-center text-blue-400 font-mono italic text-sm">R$ ${custo.toFixed(2)}</td>
-                        <td class="p-6 text-center text-green-400 font-mono font-bold">R$ ${venda.toFixed(2)}</td>
-                        <td class="p-6 text-right space-x-2">
-                            <button onclick="editarProduto('${p.id}', '${p.nome}', ${saldo}, ${venda}, ${custo})" class="text-blue-400 hover:text-blue-200 text-xs font-bold uppercase">Editar</button>
-                            <button onclick="excluirProduto('${p.id}', '${p.nome}')" class="text-red-900 hover:text-red-500 text-xs font-bold uppercase">Excluir</button>
+                    <tr class="hover:bg-gray-900/30 transition-all border-b border-gray-900/40">
+                        <td class="p-4 font-black text-gray-100 text-base">${p.nome}</td>
+                        <td class="p-4">
+                            <p class="text-xs text-gray-400 font-bold">${p.categoria || 'Tabaco Orgânico'}</p>
+                            <p class="text-[9px] font-mono text-gray-600 mt-0.5">ID: ${p.id.substring(0,8)}...</p>
                         </td>
-                    </tr>`;
-            }).join('') : `<tr><td colspan="5" class="p-20 text-center text-gray-600">Catálogo vazio.</td></tr>`;
-
-            // Atualiza Resumo Financeiro
-            document.getElementById('resumo-custo-total').innerText = `R$ ${custoTotalGlobal.toFixed(2)}`;
-            document.getElementById('resumo-venda-total').innerText = `R$ ${vendaTotalGlobal.toFixed(2)}`;
-            document.getElementById('resumo-lucro-total').innerText = `R$ ${(vendaTotalGlobal - custoTotalGlobal).toFixed(2)}`;
+                        <td class="p-4 text-center font-mono font-bold text-base ${qtd <= 10 ? 'text-red-500 animate-pulse' : 'text-green-400'}">
+                            ${qtd} un
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="window.abrirModalEdicao('${p.id}', '${p.nome}', ${qtd}, '${p.created_at}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1.5 rounded-xl transition font-black uppercase tracking-wider">
+                                    Editar / Histórico
+                                </button>
+                                <button onclick="window.excluirProduto('${p.id}', '${p.nome}')" class="text-[10px] bg-red-950/40 border border-red-500/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-xl transition font-black uppercase tracking-wider">
+                                    Excluir
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        window.abrirModal = () => {
-            editando = false;
-            document.getElementById('formProduto').reset();
-            document.getElementById('modal-titulo').innerText = "Novo Produto";
-            document.getElementById('modal').classList.replace('hidden', 'flex');
+        window.abrirModalEdicao = async (id, nome, estoqueAtual, dataCriacao) => {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-nome').value = nome;
+            document.getElementById('edit-estoque-atual').value = estoqueAtual;
+            document.getElementById('edit-qtd-antiga').value = estoqueAtual;
+
+            // 1. CARREGA HISTÓRICO DE REPOSIÇÃO (ENTRADA)
+            const dataEntradaGuardada = localStorage.getItem(`split_entrada_data_${id}`);
+            const volumeEntradaGuardado = localStorage.getItem(`split_entrada_vol_${id}`);
+            if (dataEntradaGuardada && volumeEntradaGuardado) {
+                document.getElementById('data-entrada-card').innerText = dataEntradaGuardada;
+                document.getElementById('volume-entrada-card').innerText = `Entrou: +${volumeEntradaGuardado} un`;
+            } else {
+                const dataEntrada = new Date(dataCriacao).toLocaleDateString('pt-BR') + ' às ' + new Date(dataCriacao).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('data-entrada-card').innerText = dataEntrada;
+                document.getElementById('volume-entrada-card').innerText = "Carga Inicial";
+            }
+
+            // 2. CARREGA HISTÓRICO DE SAÍDA REAL (SEJA MANUAL OU DO PDV)
+            const dataSaidaGuardada = localStorage.getItem(`split_saida_data_${id}`);
+            const volumeSaidaGuardado = localStorage.getItem(`split_saida_vol_${id}`);
+
+            if (dataSaidaGuardada && volumeSaidaGuardado) {
+                document.getElementById('data-saida-card').innerText = dataSaidaGuardada;
+                document.getElementById('volume-saida-card').innerText = `Saíram: -${volumeSaidaGuardado} un`;
+            } else {
+                document.getElementById('data-saida-card').innerText = "Sem saídas";
+                document.getElementById('volume-saida-card').innerText = "Nenhuma movimentação de saída recente.";
+            }
+
+            document.getElementById('modal-editar').classList.remove('hidden');
         };
 
-        window.fecharModal = () => document.getElementById('modal').classList.replace('flex', 'hidden');
-
-        window.editarProduto = (id, nome, estoque, preco, custo) => {
-            editando = true;
-            document.getElementById('produto-id').value = id;
-            document.getElementById('nome').value = nome;
-            document.getElementById('estoque').value = estoque;
-            document.getElementById('preco').value = preco;
-            document.getElementById('custo').value = custo;
-            document.getElementById('modal-titulo').innerText = "Editar Produto";
-            document.getElementById('modal').classList.replace('hidden', 'flex');
+        window.fecharModal = () => {
+            document.getElementById('modal-editar').classList.add('hidden');
         };
 
-        window.excluirProduto = async (id, nome) => {
-            if (confirm(`Excluir permanentemente "${nome}"?`)) {
-                const { error } = await supabase.from('produtos').delete().eq('id', id);
-                if (error) alert(error.message); else loadProducts();
+        document.getElementById('form-editar-estoque').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const novoNome = document.getElementById('edit-nome').value;
+            const novaQtd = parseInt(document.getElementById('edit-estoque-atual').value);
+            const qtdAntiga = parseInt(document.getElementById('edit-qtd-antiga').value);
+
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+            // Se a quantia AUMENTOU (Ajuste manual de Entrada)
+            if (novaQtd > qtdAntiga) {
+                const diferenca = novaQtd - qtdAntiga;
+                localStorage.setItem(`split_entrada_data_${id}`, dataFormatada + ' (Manual)');
+                localStorage.setItem(`split_entrada_vol_${id}`, diferenca);
+            } 
+            // Se a quantia DIMINUIU (Ajuste manual de Saída)
+            else if (novaQtd < qtdAntiga) {
+                const diferencaSaida = qtdAntiga - novaQtd;
+                localStorage.setItem(`split_saida_data_${id}`, dataFormatada + ' (Manual)');
+                localStorage.setItem(`split_saida_vol_${id}`, diferencaSaida);
+            }
+
+            const { error } = await supabase
+                .from('produtos')
+                .update({ 
+                    nome: novoNome, 
+                    estoque_atual: novaQtd 
+                })
+                .eq('id', id);
+
+            if (error) {
+                alert("Erro ao atualizar estoque: " + error.message);
+            } else {
+                window.fecharModal();
+                await carregarEstoque();
             }
         };
 
-        document.getElementById('formProduto').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('produto-id').value;
-            const dados = {
-                nome: document.getElementById('nome').value,
-                estoque_atual: parseInt(document.getElementById('estoque').value),
-                preco_venda: parseFloat(document.getElementById('preco').value),
-                preco_custo: parseFloat(document.getElementById('custo').value) // Coluna preco_custo
-            };
-
-            const { error } = editando 
-                ? await supabase.from('produtos').update(dados).eq('id', id)
-                : await supabase.from('produtos').insert([dados]);
-
-            if (error) alert("Erro ao salvar. Verifique se a coluna 'preco_custo' existe no Supabase.");
-            else { fecharModal(); loadProducts(); }
+        window.excluirProduto = async (id, nomeProduto) => {
+            if (confirm(`Deseja remover permanentemente o produto "${nomeProduto}" do estoque?`)) {
+                const { error } = await supabase.from('produtos').delete().eq('id', id);
+                if (error) alert("Erro ao excluir produto: " + error.message);
+                else await carregarEstoque();
+            }
         };
 
-        loadUI();
-        loadProducts();
+        init();
     </script>
 </body>
 </html>

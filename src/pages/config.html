@@ -8,90 +8,90 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .main-content { height: calc(100vh - 80px); }
+        
+        /* Ajuste de altura responsiva para rolagem de tela */
+        .main-content { height: calc(100vh - 75px); }
+        @media (min-width: 1024px) { .main-content { height: calc(100vh - 80px); } }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans overflow-hidden">
-    <div class="flex h-screen w-screen">
-        <div id="sidebar-container"></div>
+<body class="bg-gray-950 text-white font-sans overflow-hidden">
+    
+    <div class="flex h-screen w-screen overflow-hidden">
+        <div id="sidebar-container" class="no-print"></div>
 
-        <div class="flex flex-col flex-1 overflow-hidden">
-            <div id="header-container"></div>
+        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <div id="header-container" class="no-print"></div>
 
-            <main class="main-content overflow-y-auto p-6 md:p-10 bg-black/30 no-scrollbar">
+            <main class="main-content overflow-y-auto p-4 sm:p-6 md:p-8 bg-black/20 no-scrollbar pt-[95px] lg:pt-[105px]">
                 
-                <div class="flex flex-col gap-8 max-w-4xl mx-auto mt-6 lg:mt-0">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-6">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-4">
                         <div>
-                            <h2 class="text-3xl font-black text-green-500 italic uppercase tracking-tight">Configurações</h2>
-                            <p class="text-gray-500 text-xs uppercase tracking-wider mt-1">Gerenciamento do ecossistema e controle de acesso.</p>
+                            <h2 class="text-2xl sm:text-3xl font-black text-green-500 italic uppercase tracking-tight">Configurações</h2>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider mt-0.5">Gerenciamento interno e controle de credenciais.</p>
                         </div>
                         
-                        <button id="btn-logout" class="bg-red-950/40 hover:bg-red-600 border border-red-500/30 hover:border-transparent text-red-400 hover:text-white font-black px-6 py-3 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                            <span>Sair do Sistema</span> ➔
+                        <button id="btn-sair" class="w-full sm:w-auto bg-red-950/40 hover:bg-red-600 border border-red-500/30 hover:border-transparent text-red-400 hover:text-white font-black px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
+                            Sair do Sistema ➔
                         </button>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-gray-800/40 p-6 rounded-[32px] border border-gray-800 shadow-2xl space-y-4">
-                            <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest flex items-center gap-2">
-                                🔗 Base de Dados & Nuvem
+                        
+                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-[32px] border border-gray-800 shadow-xl backdrop-blur-md space-y-4">
+                            <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest">
+                                🌿 Perfil da Distribuidora
                             </h3>
-                            <div class="space-y-3">
+                            <form id="formEmpresa" class="space-y-4">
                                 <div>
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Provedor Principal</label>
-                                    <div class="w-full bg-black p-4 rounded-xl border border-gray-800 text-xs font-mono text-gray-400">
-                                        Supabase Cloud Storage
-                                    </div>
+                                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Nome de Exibição da Empresa</label>
+                                    <input type="text" id="nome-marca" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none mt-1 text-sm text-white font-bold transition-all" placeholder="Ex: Splitfilling">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold ml-1">Status do Ambiente</label>
-                                    <div class="flex items-center gap-2 w-full bg-black p-4 rounded-xl border border-gray-800 text-xs text-green-400 font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                        Produção Online (Vercel)
-                                    </div>
+                                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Cidade Sede da Operação</label>
+                                    <input type="text" id="sede-cidade" class="w-full bg-black p-4 rounded-xl border border-gray-800 focus:border-green-500 outline-none mt-1 text-sm text-white transition-all" placeholder="Ex: Campinas - SP">
+                                </div>
+                                <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-black font-black p-3.5 rounded-xl text-xs uppercase tracking-widest transition active:scale-95">
+                                    Salvar Alterações 💾
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-gray-900/50 p-5 sm:p-6 rounded-[32px] border border-gray-800 shadow-xl backdrop-blur-md space-y-4">
+                            <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest">
+                                🔗 Servidores e Banco
+                            </h3>
+                            <div class="space-y-3 text-xs bg-black p-5 rounded-xl border border-gray-800/80 font-medium">
+                                <p class="text-gray-500 uppercase font-black">Provedor Core: <span class="text-white ml-1 font-mono font-bold">Supabase Cloud JSON</span></p>
+                                <p class="text-gray-500 uppercase font-black">Ambiente Local: <span class="text-blue-400 ml-1 font-bold">http://localhost:3000</span></p>
+                                <p class="text-gray-500 uppercase font-black">Sincronização Sócio: <span class="text-purple-400 ml-1 font-bold">Ativa (Multi-dispositivos)</span></p>
+                                <div class="flex items-center gap-2 text-green-400 font-black uppercase tracking-wider pt-2 border-t border-gray-900 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    Status do App: Online na Nuvem
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-800/40 p-6 rounded-[32px] border border-gray-800 shadow-2xl space-y-4">
-                            <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest flex items-center gap-2">
-                                🌿 Dados da Distribuidora
-                            </h3>
-                            <div class="space-y-3 text-xs bg-black p-5 rounded-xl border border-gray-800">
-                                <p class="text-gray-500 uppercase font-bold">Empresa: <span class="text-white ml-1 font-black">Splitfilling</span></p>
-                                <p class="text-gray-500 uppercase font-bold">Segmento: <span class="text-white ml-1 font-black">Tabaco Orgânico</span></p>
-                                <p class="text-gray-500 uppercase font-bold">Região Mestre: <span class="text-white ml-1 font-black">Campinas e Região</span></p>
-                                <p class="text-gray-500 uppercase font-bold">Logística SP Capital: <span class="text-green-500 ml-1 font-black">Conectado</span></p>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="bg-gray-800/20 rounded-[32px] border border-gray-800 p-6 space-y-4">
-                        <h3 class="text-sm font-black text-green-500 uppercase tracking-widest flex items-center gap-2">
-                            📖 Manual Prático da Operação (Multi-Usuário)
+                    <div class="bg-gray-900/20 rounded-[32px] border border-gray-800 p-5 sm:p-6 space-y-3">
+                        <h3 class="text-xs font-black text-green-500 uppercase tracking-widest">
+                            📖 Manual Rápido (Você & Seu Sócio)
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-black text-white mb-1 uppercase tracking-tight">1. Estoque Único</p>
-                                <p class="text-gray-500">Você e seu sócio compartilham o mesmo inventário de tabaco. Alterou aqui, muda lá.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/60">
+                                <p class="font-black text-white mb-1 uppercase tracking-tight">Estoque Sincronizado</p>
+                                <p class="text-gray-500">Tanto as vendas lançadas em São Paulo Capital quanto em Campinas dão baixa no banco unificado instantaneamente.</p>
                             </div>
-                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-black text-white mb-1 uppercase tracking-tight">2. Vendas na Rua</p>
-                                <p class="text-gray-500">Lance as vendas no PDV pelo celular. O sistema calcula os prazos de recebimento na hora.</p>
-                            </div>
-                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-black text-white mb-1 uppercase tracking-tight">3. Fluxo Integrado</p>
-                                <p class="text-gray-500">As despesas de logística e faturamento são somadas em tempo real na aba de Finanças.</p>
-                            </div>
-                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/50">
-                                <p class="font-black text-white mb-1 uppercase tracking-tight">4. Segurança</p>
-                                <p class="text-gray-500">Sempre saia do sistema usando o botão acima se estiver usando um aparelho compartilhado.</p>
+                            <div class="bg-black/40 p-4 rounded-xl border border-gray-800/60">
+                                <p class="font-black text-white mb-1 uppercase tracking-tight">Fechamento Remoto</p>
+                                <p class="text-gray-500">Sempre saia da conta usando o botão "Sair do Sistema" caso utilize computadores ou telemóveis de terceiros na rua.</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </main>
         </div>
     </div>
@@ -99,29 +99,70 @@
     <script type="module">
         import { supabase } from '../supabaseClient.js';
 
-        async function init() {
-            // Puxa o menu lateral e topo dinâmicos
-            const [sb, hd] = await Promise.all([
-                fetch('../sidebar.html').then(r => r.text()),
-                fetch('../header.html').then(r => r.text())
-            ]);
-            document.getElementById('sidebar-container').innerHTML = sb;
-            document.getElementById('header-container').innerHTML = hd;
-            document.getElementById('page-title').innerText = "Configurações Globais";
+        async function inicializarPagina() {
+            try {
+                // Injeta sidebar e header assíncronos compartilhados
+                const [sb, hd] = await Promise.all([
+                    fetch('../sidebar.html').then(r => r.text()),
+                    fetch('../header.html').then(r => r.text())
+                ]);
+                document.getElementById('sidebar-container').innerHTML = sb;
+                document.getElementById('header-container').innerHTML = hd;
 
-            // Lógica do Botão Deslogar / Sair da Conta
-            document.getElementById('btn-logout').onclick = async () => {
-                const { error } = await supabase.auth.signOut();
-                if (error) {
-                    alert("Erro ao sair: " + error.message);
+                // CRÍTICO: Ativa as funções touch do botão hambúrguer mobile no sidebar
+                const scripts = document.getElementById('sidebar-container').getElementsByTagName('script');
+                for (let script of scripts) { eval(script.text); }
+
+                document.getElementById('page-title').innerText = "Configurações Globais";
+
+                // Carrega dados salvos no formulário se existirem
+                if(localStorage.getItem('split_nome_marca')) {
+                    document.getElementById('nome-marca').value = localStorage.getItem('split_nome_marca');
                 } else {
-                    // Manda de volta para a tela de login na raiz
-                    window.location.href = '../../index.html';
+                    document.getElementById('nome-marca').value = "Splitfilling";
+                }
+
+                if(localStorage.getItem('split_cidade_sede')) {
+                    document.getElementById('sede-cidade').value = localStorage.getItem('split_cidade_sede');
+                } else {
+                    document.getElementById('sede-cidade').value = "Campinas - SP";
+                }
+
+                setupEventos();
+            } catch (e) {
+                console.error("Erro estrutural ao montar tela config:", e);
+            }
+        }
+
+        function setupEventos() {
+            // Salvar informações customizadas locais simples
+            document.getElementById('formEmpresa').onsubmit = (e) => {
+                e.preventDefault();
+                const novaMarca = document.getElementById('nome-marca').value;
+                const novaSede = document.getElementById('sede-cidade').value;
+
+                localStorage.setItem('split_nome_marca', novaMarca);
+                localStorage.setItem('split_cidade_sede', novaSede);
+                
+                alert("Dados salvos localmente! Dê F5 para propagar o nome no sistema.");
+                location.reload();
+            };
+
+            // Lógica do botão Deslogar / Sair do Supabase Auth
+            document.getElementById('btn-sair').onclick = async () => {
+                if (confirm("Deseja realmente encerrar a sessão e sair do aplicativo?")) {
+                    const { error } = await supabase.auth.signOut();
+                    if (error) {
+                        alert("Erro ao desconectar: " + error.message);
+                    } else {
+                        // Empurra o usuário para a página de Login na raiz fora de src/pages/
+                        window.location.href = '../../index.html';
+                    }
                 }
             };
         }
 
-        init();
+        inicializarPagina();
     </script>
 </body>
 </html>
