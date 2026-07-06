@@ -74,10 +74,18 @@
                     <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Nome do Produto</label>
                     <input type="text" id="edit-nome" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-green-500 text-sm font-bold text-white mt-1" placeholder="Ex: easyspli" required>
                 </div>
-                <div id="campo-preco-venda">
-                    <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Preço de Venda (R$)</label>
-                    <input type="number" step="0.01" id="edit-preco-venda" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-green-500 text-sm font-mono text-white mt-1" placeholder="0.00">
+
+                <div id="campos-valores-financeiros" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] uppercase text-red-400 font-black ml-1">Preço de Custo (R$)</label>
+                        <input type="number" step="0.01" id="edit-preco-custo" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-red-500 text-sm font-mono text-white mt-1" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase text-green-400 font-black ml-1">Preço de Venda (R$)</label>
+                        <input type="number" step="0.01" id="edit-preco-venda" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-green-500 text-sm font-mono text-white mt-1" placeholder="0.00">
+                    </div>
                 </div>
+
                 <div>
                     <label class="text-[10px] uppercase text-gray-500 font-black ml-1">Quantidade em Estoque (Unidades)</label>
                     <input type="number" id="edit-estoque-atual" class="w-full bg-black p-4 rounded-xl border border-gray-800 outline-none focus:border-green-500 text-sm font-mono font-bold text-white mt-1" placeholder="0" required>
@@ -93,7 +101,7 @@
                     <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800/80">
                         <p class="text-[9px] uppercase tracking-wider text-green-400 font-black">Última Entrada / Reposição</p>
                         <p id="data-entrada-card" class="text-sm font-bold text-white mt-1 font-mono">--/--/----</p>
-                        <p id="volume-entrada-card" class="text-[11px] text-green-500 font-bold mt-0.5">Carga Inicial</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Carga Inicial</p>
                     </div>
                     <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800/80">
                         <p class="text-[9px] uppercase tracking-wider text-red-400 font-black">Última Saída / Baixa</p>
@@ -108,7 +116,7 @@
     <script type="module">
         import { supabase } from '../supabaseClient.js';
 
-        let modoModal = 'cadastro'; // Pode ser 'cadastro' ou 'edicao'
+        let modoModal = 'cadastro';
 
         async function init() {
             try {
@@ -144,18 +152,21 @@
             tbody.innerHTML = produtos.map(p => {
                 const qtd = p.estoque_atual || 0;
                 const precoVenda = p.preco_venda || 0;
+                const precoCusto = p.preco_custo || 0;
                 return `
                     <tr class="hover:bg-gray-900/30 transition-all border-b border-gray-900/50">
                         <td class="p-4 sm:p-5 font-black text-gray-100 text-base flex flex-col">
                             <span>${p.nome}</span>
-                            <span class="text-xs text-gray-500 font-mono normal-case tracking-normal mt-0.5">R$ ${precoVenda.toFixed(2)}</span>
+                            <span class="text-xs text-gray-500 font-mono normal-case tracking-normal mt-0.5">
+                                Venda: R$ ${precoVenda.toFixed(2)} <span class="text-gray-700 mx-1">|</span> Custo: R$ ${precoCusto.toFixed(2)}
+                            </span>
                         </td>
                         <td class="p-4 sm:p-5 text-center font-mono font-bold text-base ${qtd <= 10 ? 'text-red-500 animate-pulse' : 'text-green-400'}">
                             ${qtd} un
                         </td>
                         <td class="p-4 sm:p-5 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <button onclick="window.abrirModalEdicao('${p.id}', '${p.nome}', ${qtd}, ${precoVenda}, '${p.created_at}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1.5 rounded-xl transition font-black uppercase tracking-wider">
+                                <button onclick="window.abrirModalEdicao('${p.id}', '${p.nome}', ${qtd}, ${precoCusto}, ${precoVenda}, '${p.created_at}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-200 px-3 py-1.5 rounded-xl transition font-black uppercase tracking-wider">
                                     Editar
                                 </button>
                                 <button onclick="window.excluirProduto('${p.id}', '${p.nome}')" class="text-[10px] bg-red-950/40 border border-red-500/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-xl transition font-black uppercase tracking-wider">
@@ -173,21 +184,22 @@
             document.getElementById('modal-titulo').innerText = "Cadastrar Novo Produto";
             document.getElementById('form-editar-estoque').reset();
             document.getElementById('edit-id').value = "";
-            document.getElementById('campo-preco-venda').classList.remove('hidden');
+            document.getElementById('campos-valores-financeiros').classList.remove('hidden');
             document.getElementById('secao-auditoria').classList.add('hidden');
             document.getElementById('modal-editar').classList.remove('hidden');
         };
 
-        window.abrirModalEdicao = async (id, nome, estoqueAtual, precoVenda, dataCriacao) => {
+        window.abrirModalEdicao = async (id, nome, estoqueAtual, precoCusto, precoVenda, dataCriacao) => {
             modoModal = 'edicao';
             document.getElementById('modal-titulo').innerText = "Editar Produto & Histórico";
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-nome').value = nome;
+            document.getElementById('edit-preco-custo').value = precoCusto;
             document.getElementById('edit-preco-venda').value = precoVenda;
             document.getElementById('edit-estoque-atual').value = estoqueAtual;
             document.getElementById('edit-qtd-antiga').value = estoqueAtual;
 
-            document.getElementById('campo-preco-venda').classList.add('hidden'); // Esconde preço na edição rápida
+            document.getElementById('campos-valores-financeiros').classList.add('hidden'); // Oculta financeiro na edição rápida de estoque
             document.getElementById('secao-auditoria').classList.remove('hidden');
 
             // Histórico de Entrada
@@ -228,11 +240,12 @@
 
             if (modoModal === 'cadastro') {
                 const preco_venda = parseFloat(document.getElementById('edit-preco-venda').value) || 0;
+                const preco_custo = parseFloat(document.getElementById('edit-preco-custo').value) || 0;
                 
-                // INSERT: Cadastra do zero enviando as colunas certas do seu banco
+                // MODO CADASTRO: Inclui preco_custo e preco_venda no Supabase
                 const { error } = await supabase
                     .from('produtos')
-                    .insert([{ nome, estoque_atual, preco_venda }]);
+                    .insert([{ nome, estoque_atual, preco_venda, preco_custo }]);
 
                 if (error) alert("Erro ao cadastrar produto: " + error.message);
                 else {
@@ -240,7 +253,7 @@
                     await carregarEstoque();
                 }
             } else {
-                // MODO: EDICÃO
+                // MODO EDIÇÃO: Atualização rápida de quantidade e nome
                 const qtdAntiga = parseInt(document.getElementById('edit-qtd-antiga').value);
                 const agora = new Date();
                 const dataFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
@@ -255,7 +268,6 @@
                     localStorage.setItem(`split_saida_vol_${id}`, diferencaSaida);
                 }
 
-                // UPDATE BLINDADO CONTRA ERRO 400
                 const { error } = await supabase
                     .from('produtos')
                     .update({ nome, estoque_atual })
